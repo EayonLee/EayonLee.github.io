@@ -1,0 +1,5 @@
+# uid加密处理
+https://mp.kuwo.cn/openapi/v1/fmct/artist/findRealNameOrAuditByUid?uid=574791182 。
+https://mp.kuwo.cn/openapi/v1/fmct/copyrightCompany/findCopyrightCompanysByUid?uid=571356470 。
+https://mp.kuwo.cn/openapi/v1/fmct/artist/findArtistByCreatorId?creatorId=2000 。
+https://mp.kuwo.cn/openapi/v1/fmct/artist/findArtistByUid?uid=574798595 。

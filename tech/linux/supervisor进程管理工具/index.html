@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Supervisor进程管理工具 | Eayon&#39;s Blog</title>
+<meta name="keywords" content="运维, Linux, Supervisor">
+<meta name="description" content="Supervisor进程管理工具-入门到实战">
+<meta name="author" content="Eayon">
+<link rel="canonical" href="https://eayonlee.com/tech/linux/supervisor%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.css" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.js" onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://eayonlee.com/img/avatar.png">
+<link rel="apple-touch-icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="mask-icon" href="https://eayonlee.com/img/avatar.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js"></script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = ""; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<meta property="og:title" content="Supervisor进程管理工具" />
+<meta property="og:description" content="Supervisor进程管理工具-入门到实战" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://eayonlee.com/tech/linux/supervisor%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/" />
+<meta property="og:image" content="https://eayonlee.com/img/tech/linux/supervisor_web2.png" /><meta property="article:section" content="tech" />
+<meta property="article:published_time" content="2023-09-03T17:27:28+08:00" />
+<meta property="article:modified_time" content="2023-09-03T17:27:28+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://eayonlee.com/img/tech/linux/supervisor_web2.png" />
+<meta name="twitter:title" content="Supervisor进程管理工具"/>
+<meta name="twitter:description" content="Supervisor进程管理工具-入门到实战"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+        {
+          "@type": "ListItem",
+          "position":  2 ,
+          "name": "👨‍💻 Technology",
+          "item": "https://eayonlee.com/tech/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position":  3 ,
+          "name": "Linux",
+          "item": "https://eayonlee.com/tech/linux/"
+        }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "Supervisor进程管理工具",
+      "item": "https://eayonlee.com/tech/linux/supervisor%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Supervisor进程管理工具",
+  "name": "Supervisor进程管理工具",
+  "description": "Supervisor进程管理工具-入门到实战",
+  "keywords": [
+    "运维", "Linux", "Supervisor"
+  ],
+  "articleBody": "1 简介 Supervisor是用Python开发的一套通用的进程管理工具，能将一个普通的命令行变为后台Daemon，并监控进程状态，异常退出时能自动重启。是通过 fork/exec 的方式把这些被管理的进程当作Supervisor的子进程来启动，这样只要在Supervisor的配置文件中，把要管理的进程可执行文件的路径写进去即可。\nSupervisor主要分为以下四个核心部分：\nSupervisord：它是Supervisor服务的主要管理器，运行Supervisor时会启动一个进程Supervisord，它负责启动所管理的进程；并将所管理的进程作为自己的子进程来启动，而且可以在所管理的进程出现崩溃时自动重启 Supervisorctl：这是Supervisor服务的客户端命令行工具，可以用来执行stop、start、restart等命令来对这些子进程进行管理 Web Server：这是Supervisor服务的网页可视化界面，可以通过Web界面查看和控制进程状态，简化了对操作命令的学习 xml-rpc interface：服务于Web UI的同一个HTTP服务器，提供一个xml-rpc接口，可以用来查询和控制管理程序及其他运行的程序 官网：www.supervisord.org。\n2 Supervisor服务运行环境说明 Supervisor可以运行在大多数泪Unix系统，但是不能运行在任何Windows系统，Supervisor运行在Python环境中，可以在Python2和Python3版本上工作。\n3 Supervisor 安装 由于我是Ubuntu系统所以这里使用apt的方式，CentOS自行使用yum\n当然你也可以通过安装python-pip，然后通过pip install supervisor来安装Supervisor也是没问题的\n# 安装 sudo apt update \u0026\u0026 sudo apt install supervisor # 验证 sudo systemctl status supervisor supervisord -version 4 配置进程管理 Supervisor安装完成之后会在系统中生成两个主要的配置文件：\n主进程配置文件：/etc/supervisor/supervisord.conf\n子进程配置文件目录：/etc/supervisor/conf.d/\n注意：如果你是用pip方式安装的Supervisor，默认是没有主进程和子进程配置文件的，但你可以通过echo_supervisord_conf \u003e /etc/supervisor/supervisord.conf命令生成一个主进程配置文件，然后通过mkdir /etc/supervisor/conf.d生成一个子进程配置文件目录\n4.1 Supervisord 配置及启动 如下为完整的supervisord.conf配置文件\n;开头的代表注释，有可能你默认的配置文件和下面的不一样，你可以按照下面的配置进行相应的增加，如下是4.1.0版本完整配置\n有些路径配置尽量保持你默认配置不要修改\n[unix_http_server] file=/var/run/supervisor.sock ; socket套接字文件的路径，用于客户端和服务端建立本地连接 chmod=0700 ;socket文件的权限，默认是0700 ;chown=nobody:nogroup ;socket文件属主与属组信息设定，格式：uid:gid，注释掉使用默认就行 ;[inet_http_server] ;Web界面配置，默认是没有的（关闭），一般企业里使用也不打开 ;port=127.0.0.1:9901 ;Web管理后台运行的IP和端口，如果开放到公网切部署在云服务器，这里应该是内网ip ;username=user ;登录管理后台的用户名 ;password=123 ;登录管理后台的密码 [supervisord] logfile=/var/log/supervisor/supervisord.log ;主日志文件;默认为$CWD/supervisor.log logfile_maxbytes=50MB ;日志文件大小，超出会rotate，默认50MB，如果设置成0表示不限制大小 logfile_backups=10 ;主日志文件的备份数量，默认是10，设为0表示不备份 loglevel=info ;日志级别，默认为info,其它值为“debug,warn,trace” pidfile=/var/run/supervisord.pid ;supervisord服务进程pid文件，如果没有改文件也就说明supervisord没有运行 nodaemon=false ;是否在前台启动，默认是false，即以daemon（后台）的方式启动 minfds=65536 ;可以打开的文件描述符的最小值，默认 1024，企业中可以调整到最大65536 minprocs=200 ;可以打开的进程数的最小值，默认 200,企业中默认200够用 ;如下全部注释掉，一般也不使用，需要时可按需打开 ;umask=022 ; (process file creation umask;default 022) ;user=chrism ; (default is current user, required if root) ;identifier=supervisor ; (supervisord identifier, default is 'supervisor') ;directory=/tmp ; (default is not to cd during start) ;nocleanup=true ; (don't clean up tempfiles at start;default false) ;childlogdir=/tmp ; ('AUTO' child log dir, default $TEMP) ;environment=KEY=value ; (key value pairs to add to environment) ;strip_ansi=false ; (strip ansi escape codes in logs; def. false)[supervisorctl] [rpcinterface:supervisor] ;用于外部程序或工具通过rpc接口与 Supervisor 通信和控制被监控的进程。比如supervisorctl，一定要添加，不然supervisorctl用不了 supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface [supervisorctl] serverurl=unix:///var/run/supervisor.sock ; supervisorctl通过socket连接supervisord服务端，路径需要和与unix_http_server中的file一致，该方式也就是通过本地的方式连接 ;如果你想通过网络http的方式可以使用下面的配置，但是下面和上面的serverurl不能共存，切记 ;serverurl=http://127.0.0.1:9001 ;通过HTTP的方式连接supervisord ;username=chris ; should be same as http_username if set ;password=123 ; should be same as http_password if set ;prompt=mysupervisor ; cmd line prompt (default \"supervisor\") ;history_file=~/.sc_history ; use readline history if available;[program:xx]是被管理的进程配置参数，xx是进程的名称 [include] files = /etc/supervisor/conf.d/*.ini ;相当于是引入其他的配置文件进来，支持ini和conf，一般program配置我们不会写在当前配置文件中，都会单独写在外面，所以就可以通过include进行引入 修改完配置文件之后先查看是否已启动supervisord，如果启动需要重启加载我们新更新的配置\n# 查看进程 root@bj-ubuntu-eayon:~# ps -ef | grep supervisord root 3463154 1 0 Sep02 ? 00:00:09 /usr/bin/python3 /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf root 3878074 3876890 0 12:06 pts/0 00:00:00 vim supervisord.conf root 3894307 3893980 0 13:12 pts/2 00:00:00 grep --color=auto supervisord # kill supervisord root@bj-ubuntu-eayon:~# kill -9 3463154 指定supervisord.conf配置文件启动supervisord\nsupervisord -c /etc/supervisor/supervisord.conf 如果出现Unlinking stale socket /var/run/supervisor.sock错误，可以通过sudo rm /var/run/supervisor.sock删除后重试\n启动好之后建议通过ps -ef | grep supervisord查看启动进程，如果出现两个的话讲最旧的进行删除。\n访问Web\n4.2 Program 子进程配置文件 比如我们现在想要通过Supervisor来管理一个Nginx，首先先下载一个Nginx\nsudo apt install nginx # 下载完之后他会默认启动，可以看一下 root@bj-ubuntu-eayon:/opt# systemctl status nginx ● nginx.service - A high performance web server and a reverse proxy server Loaded: loaded (/lib/systemd/system/nginx.service; enabled; vendor preset: enabled) Active: active (running) since Sun 2023-09-03 14:41:16 CST; 13s ago Docs: man:nginx(8) Main PID: 3936874 (nginx) Tasks: 3 (limit: 2262) Memory: 5.4M CGroup: /system.slice/nginx.service ├─3936874 nginx: master process /usr/sbin/nginx -g daemon on; master_process on; ├─3936875 nginx: worker process └─3936876 nginx: worker process # 那我们先把它给kill掉 root@bj-ubuntu-eayon:/opt# ps -ef | grep nginx root 3936874 1 0 14:41 ? 00:00:00 nginx: master process /usr/sbin/nginx -g daemon on; master_process on; www-data 3936875 3936874 0 14:41 ? 00:00:00 nginx: worker process www-data 3936876 3936874 0 14:41 ? 00:00:00 nginx: worker process root 3937378 3893980 0 14:42 pts/2 00:00:00 grep --color=auto nginx root@bj-ubuntu-eayon:/opt# kill -9 3936874 3936875 3936876 Program配置文件就是配置我们要管理的进程的配置文件。当然也可以把下面所有配置项都写到 supervisord.conf 文件里，但并不推荐这样做，而是通过在supervisord.conf中通过include 的方式把不同的程序（组）写到不同的配置文件里。\n由于我们的子进程配置文件目录是/etc/supervisor/conf.d/，所以我们需要在该目录下创建/etc/supervisor/conf.d/nginx.ini\n[program:nginx] ; 当前被管理程序，格式: [program:xxx] 后面的名字可以随意 command=/usr/sbin/nginx -g 'daemon off;' ; 程序启动命令，跟手动在命令行启动的命令是一样的 autostart=true ; 当前被管理程序是否随supervisord一起启动 startsecs=10 ; 当前被管理程序启动10秒后没有异常退出，就表示进程正常启动了，默认为1秒，根据具体服务的启动时长进行改变，比如java就比较慢 autorestart=true ; 当前被管理程序退出后自动重启,可选值：[unexpected,true,false]，默认为unexpected，表示进程意外杀死后才重启 startretries=1 ; 当前被管理程序启动失败自动重试次数，默认是3 user=root ; 用哪个用户启动当前被管理程序，默认是root priority=999 ; 当前被管理程序启动优先级，默认999，该值最小的优先启动 redirect_stderr=true ; 重定向stderr错误日志到stdout标准日志，默认false，一般都会重定向到一个 stdout_logfile=/var/log/nginx/nginx.log ; 程序运行输出的stdout标准日志文件（正常运行日志），需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录 stdout_logfile_maxbytes=20MB ; stdout 日志文件大小，默认50MB stdout_logfile_backups=20 ; stdout 日志文件备份数，默认是10 ;stderr_logfile=/opt/apache-tomcat-8.5.87/logs/catalina.err ; 程序运行输出的stderr错误日志文件输出路径 ;stderr_logfile_maxbytes=1MB ; stderr 日志文件大小，默认50MB ;stderr_logfile_backups=10 ; stderr 日志文件备份数，默认是10 ;stopasgroup=false ; 默认为false，当前被管理程序被杀死时是否向这个进程组发送stop信号，包括子进程 ;killasgroup=false ; 默认为fakse，当前被管理程序被杀死时是否向这个进程组发送kill信号，包括子进程 切记：配置中的日志输出路径和日志文件一定要提前创建，否则启动失败\n当添加/修改子进程配置之后，可以使用supervisorctl reread进行配置检查，配置无误后通过supervisorctl update更新配置。\n此时在后台就可以直接看见新增的子进程\n5 常用命令介绍 supervisorctl status nginx # nginx状态 supervisorctl stop nginx # 停止nginx supervisorctl start nginx # 启动nginx supervisorctl restart nginx # 重启nginx supervisorctl reoload nginx # 重载nginx supervisorctl update nginx # 配置文件修改后可以使用该命令加载新的配置 # 所有子进程 supervisorctl start all # 启动所有被监控的进程 supervisorctl stop all # 停止所有被监控的进程 supervisorctl restart all # 重启所有被监控的进程 supervisorctl reload all # 重新加载所有被监控的进程的配置 supervisorctl shutdown # 关闭Supervisor # 主要针对supervisord.conf配置文件的刷新，而不需要重启 Supervisor 进程。当修改了supervisord.conf，例如增加或修改了进程配置时，使用 reload 命令可以应用这些更改。重要的是，reload 不会中断已经在运行的进程，只会影响新的配置更改。 supervisorctl reload # 检查supervisord配置和引入的子进程配置文件，如果配置文件没有问题，将显示 xxxxxxx: available supervisorctl reread # 主要针对子进程配置文件的刷新，它关注于管理和操作已定义的进程，而不会重新加载 supervisord.conf 的主配置文件。 supervisorctl update ",
+  "wordCount" : "3893",
+  "inLanguage": "zh",
+  "image":"https://eayonlee.com/img/tech/linux/supervisor_web2.png","datePublished": "2023-09-03T17:27:28+08:00",
+  "dateModified": "2023-09-03T17:27:28+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Eayon"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://eayonlee.com/tech/linux/supervisor%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Eayon's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://eayonlee.com/img/avatar.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    (function () {
+        let  arr,reg = new RegExp("(^| )"+"change-themes"+"=([^;]*)(;|$)");
+        if(arr = document.cookie.match(reg)) {
+        } else {
+            if (new Date().getHours() >= 19 || new Date().getHours() < 6) {
+                document.body.classList.add('dark');
+                localStorage.setItem("pref-theme", 'dark');
+            } else {
+                document.body.classList.remove('dark');
+                localStorage.setItem("pref-theme", 'light');
+            }
+        }
+    })()
+
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://eayonlee.com" accesskey="h" title="Eayon&#39;s Blog (Alt + H)">
+            <img src="https://eayonlee.com/img/avatar.png" alt="logo" aria-label="logo"
+                 height="35">Eayon&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://eayonlee.com/search" title="🔍Search (Alt &#43; /)" accesskey=/>
+                <span>🔍Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/" title="Home">
+                <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tech" title="👨🏻‍💻 Tech">
+                <span>👨🏻‍💻 Tech</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/archives" title="Archives">
+                <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tags" title="Tags">
+                <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/about" title="About">
+                <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/links" title="Links">
+                <span>Links</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main page">
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+</style>
+
+<article class="post-single">
+    <div id="single-content">
+        <header class="post-header">
+            <div class="breadcrumbs"><a href="https://eayonlee.com">🏠 主页</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/">👨‍💻 Technology</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/linux/">Linux</a></div>
+            <h1 class="post-title">
+                Supervisor进程管理工具
+            </h1>
+            <div class="post-description">
+                Supervisor进程管理工具-入门到实战
+            </div>
+            <div class="post-meta">
+
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+
+    .parent-post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        opacity: 0.8;
+    }
+</style>
+
+<span class="parent-post-meta">
+    <span id="post_meta_style_1">
+        <span class="fa fa-calendar-check-o"></span>
+        <span>2023-09-03
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    
+    
+    
+    
+    
+    
+    
+    <span id="post_meta_style_3">
+        <span class="fa fa-file-word-o"></span>
+        <span>3893字
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_4">
+        <span class="fa fa-clock-o"></span>
+        <span>8分钟
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_5">
+        <span class="fa fa-user-o"></span>
+        <span>Eayon
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_6">
+        <span class="fa fa-tags" style="opacity: 0.8"></span>
+        <span>
+            <span class="post-tags-meta">
+                <a href="https://eayonlee.com/tags/%E8%BF%90%E7%BB%B4/" style="color: var(--secondary)!important;">运维</a>
+                &nbsp;<a href="https://eayonlee.com/tags/linux/" style="color: var(--secondary)!important;">Linux</a>
+                &nbsp;<a href="https://eayonlee.com/tags/supervisor/" style="color: var(--secondary)!important;">Supervisor</a>
+            </span>
+        </span>
+    </span>
+</span>
+<span style="opacity: 0.8;">
+                    <span id="post_meta_style_7">
+                        &nbsp;&nbsp;
+                        <span class="fa fa-eye" ></span>
+                        <span>
+                            <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+                            &nbsp;&nbsp;
+                        </span>
+                    </span>
+                    <span id="post_meta_style_8">
+                        <span class="fa fa-commenting-o"></span>
+                        <span>
+                            <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js"></script>
+                            <script>
+                                let url = document.documentURI
+                                
+                                let dnsUrl = "https://eayonlee.com"
+                                let urlSplit = url.split(dnsUrl)
+                                let finalUrl = urlSplit[1]
+                                if (finalUrl[0] !== '/') {
+                                    finalUrl = '/'+finalUrl
+                                }
+                                twikoo.getCommentsCount({
+                                    envId:  null , 
+                                region:  null , 
+                                urls: [ 
+                                    
+                                    finalUrl,
+                                ],
+                                    includeReply: false 
+                                }).then(function (res) {
+                                    let count = res[0].count
+                                    const obj = document.getElementById("comment_count");
+                                    obj.innerText = count
+                                    
+                                    
+                                    
+                                }).catch(function (err) {
+                                    
+                                    console.error(err);
+                                });
+                            </script>
+                            <span id="comment_count"></span>
+                        </span>
+                    </span>
+                </span>
+
+</div>
+        </header> 
+<figure class="entry-cover1"><img style="zoom:;" loading="lazy" src="https://eayonlee.com/img/tech/linux/supervisor_web2.png" alt="">
+    
+</figure><aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-%e7%ae%80%e4%bb%8b" aria-label="1 简介">1 简介</a></li>
+                <li>
+                    <a href="#2-supervisor%e6%9c%8d%e5%8a%a1%e8%bf%90%e8%a1%8c%e7%8e%af%e5%a2%83%e8%af%b4%e6%98%8e" aria-label="2 Supervisor服务运行环境说明">2 Supervisor服务运行环境说明</a></li>
+                <li>
+                    <a href="#3-supervisor-%e5%ae%89%e8%a3%85" aria-label="3 Supervisor 安装">3 Supervisor 安装</a></li>
+                <li>
+                    <a href="#4-%e9%85%8d%e7%bd%ae%e8%bf%9b%e7%a8%8b%e7%ae%a1%e7%90%86" aria-label="4 配置进程管理">4 配置进程管理</a><ul>
+                        
+                <li>
+                    <a href="#41-supervisord-%e9%85%8d%e7%bd%ae%e5%8f%8a%e5%90%af%e5%8a%a8" aria-label="4.1 Supervisord 配置及启动">4.1 Supervisord 配置及启动</a></li>
+                <li>
+                    <a href="#42-program-%e5%ad%90%e8%bf%9b%e7%a8%8b%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" aria-label="4.2 Program 子进程配置文件">4.2 Program 子进程配置文件</a></li></ul>
+                </li>
+                <li>
+                    <a href="#5-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4%e4%bb%8b%e7%bb%8d" aria-label="5 常用命令介绍">5 常用命令介绍</a>
+                </li>
+            </ul>
+        </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+        
+        activeElement = elements[0];
+        const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+        document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+    }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        if (elements) {
+            activeElement = Array.from(elements).find((element) => {
+                if ((getOffsetTop(element) - window.pageYOffset) > 0 &&
+                    (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                    return element;
+                }
+            }) || activeElement
+
+            elements.forEach(element => {
+                const id = encodeURI(element.getAttribute('id')).toLowerCase();
+                if (element === activeElement){
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+                } else {
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+                }
+            })
+        }
+    }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;
+    }
+</script>
+        <div class="post-content"><h2 id="1-简介">1 简介<a hidden class="anchor" aria-hidden="true" href="#1-简介">#</a></h2>
+<p>Supervisor是用Python开发的一套通用的进程管理工具，能将一个普通的命令行变为后台Daemon，并监控进程状态，异常退出时能自动重启。是通过 <code>fork/exec</code> 的方式把这些被管理的进程当作Supervisor的子进程来启动，这样只要在Supervisor的配置文件中，把要管理的进程可执行文件的路径写进去即可。</p>
+<p><strong>Supervisor主要分为以下四个核心部分</strong>：</p>
+<ul>
+<li><strong>Supervisord</strong>：它是Supervisor服务的主要管理器，运行Supervisor时会启动一个进程<code>Supervisord</code>，它负责启动所管理的进程；并将所管理的进程作为自己的子进程来启动，而且可以在所管理的进程出现崩溃时自动重启</li>
+<li><strong>Supervisorctl</strong>：这是Supervisor服务的客户端命令行工具，可以用来执行<code>stop</code>、<code>start</code>、<code>restart</code>等命令来对这些子进程进行管理</li>
+<li><strong>Web Server</strong>：这是Supervisor服务的网页可视化界面，可以通过Web界面查看和控制进程状态，简化了对操作命令的学习</li>
+<li><strong>xml-rpc interface</strong>：服务于Web UI的同一个HTTP服务器，提供一个<code>xml-rpc</code>接口，可以用来查询和控制管理程序及其他运行的程序</li>
+</ul>
+<p>官网：<a href="http://www.supervisord.org/introduction.html" title="点击进入官网">www.supervisord.org</a>。</p>
+<h2 id="2-supervisor服务运行环境说明">2 Supervisor服务运行环境说明<a hidden class="anchor" aria-hidden="true" href="#2-supervisor服务运行环境说明">#</a></h2>
+<p>Supervisor可以运行在大多数泪Unix系统，但是不能运行在任何Windows系统，Supervisor运行在Python环境中，可以在Python2和Python3版本上工作。</p>
+<h2 id="3-supervisor-安装">3 Supervisor 安装<a hidden class="anchor" aria-hidden="true" href="#3-supervisor-安装">#</a></h2>
+<p>由于我是Ubuntu系统所以这里使用<code>apt</code>的方式，CentOS自行使用<code>yum</code></p>
+<p>当然你也可以通过安装<code>python-pip</code>，然后通过<code>pip install supervisor</code>来安装Supervisor也是没问题的</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 安装</span>
+</span></span><span style="display:flex;"><span>sudo apt update <span style="color:#f92672">&amp;&amp;</span> sudo apt install supervisor
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 验证</span>
+</span></span><span style="display:flex;"><span>sudo systemctl status supervisor
+</span></span><span style="display:flex;"><span>supervisord -version
+</span></span></code></pre></div><h2 id="4-配置进程管理">4 配置进程管理<a hidden class="anchor" aria-hidden="true" href="#4-配置进程管理">#</a></h2>
+<p><strong>Supervisor安装完成之后会在系统中生成两个主要的配置文件</strong>：</p>
+<p><strong>主进程配置文件</strong>：<code>/etc/supervisor/supervisord.conf</code></p>
+<p><strong>子进程配置文件目录</strong>：<code>/etc/supervisor/conf.d/</code></p>
+<p><strong>注意</strong>：如果你是用<code>pip</code>方式安装的Supervisor，默认是没有主进程和子进程配置文件的，但你可以通过<code>echo_supervisord_conf &gt; /etc/supervisor/supervisord.conf</code>命令生成一个主进程配置文件，然后通过<code>mkdir /etc/supervisor/conf.d</code>生成一个子进程配置文件目录</p>
+<p><img loading="lazy" src="/img/tech/linux/supervisor_conf.png" alt="tup"  />
+</p>
+<h3 id="41-supervisord-配置及启动">4.1 Supervisord 配置及启动<a hidden class="anchor" aria-hidden="true" href="#41-supervisord-配置及启动">#</a></h3>
+<p>如下为完整的<code>supervisord.conf</code>配置文件</p>
+<p><code>;</code>开头的代表注释，有可能你默认的配置文件和下面的不一样，你可以按照下面的配置进行相应的增加，如下是<code>4.1.0</code>版本完整配置</p>
+<p>有些路径配置尽量保持你默认配置不要修改</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#66d9ef">[unix_http_server]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">file</span><span style="color:#f92672">=</span><span style="color:#e6db74">/var/run/supervisor.sock   ; socket套接字文件的路径，用于客户端和服务端建立本地连接</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">chmod</span><span style="color:#f92672">=</span><span style="color:#e6db74">0700                      ;socket文件的权限，默认是0700</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;chown=nobody:nogroup           ;socket文件属主与属组信息设定，格式：uid:gid，注释掉使用默认就行</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;[inet_http_server]              ;Web界面配置，默认是没有的（关闭），一般企业里使用也不打开</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;port=127.0.0.1:9901            ;Web管理后台运行的IP和端口，如果开放到公网切部署在云服务器，这里应该是内网ip</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;username=user                  ;登录管理后台的用户名</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;password=123                   ;登录管理后台的密码</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">[supervisord]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">logfile</span><span style="color:#f92672">=</span><span style="color:#e6db74">/var/log/supervisor/supervisord.log  ;主日志文件;默认为$CWD/supervisor.log</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">logfile_maxbytes</span><span style="color:#f92672">=</span><span style="color:#e6db74">50MB                        ;日志文件大小，超出会rotate，默认50MB，如果设置成0表示不限制大小</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">logfile_backups</span><span style="color:#f92672">=</span><span style="color:#e6db74">10                           ;主日志文件的备份数量，默认是10，设为0表示不备份</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">loglevel</span><span style="color:#f92672">=</span><span style="color:#e6db74">info                                ;日志级别，默认为info,其它值为“debug,warn,trace”</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">pidfile</span><span style="color:#f92672">=</span><span style="color:#e6db74">/var/run/supervisord.pid             ;supervisord服务进程pid文件，如果没有改文件也就说明supervisord没有运行</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nodaemon</span><span style="color:#f92672">=</span><span style="color:#e6db74">false                               ;是否在前台启动，默认是false，即以daemon（后台）的方式启动</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">minfds</span><span style="color:#f92672">=</span><span style="color:#e6db74">65536                                 ;可以打开的文件描述符的最小值，默认 1024，企业中可以调整到最大65536</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">minprocs</span><span style="color:#f92672">=</span><span style="color:#e6db74">200                                 ;可以打开的进程数的最小值，默认 200,企业中默认200够用</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;如下全部注释掉，一般也不使用，需要时可按需打开</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;umask=022                                   ; (process file creation umask;default 022)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;user=chrism                                 ; (default is current user, required if root)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;identifier=supervisor                       ; (supervisord identifier, default is &#39;supervisor&#39;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;directory=/tmp                              ; (default is not to cd during start)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;nocleanup=true                              ; (don&#39;t clean up tempfiles at start;default false)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;childlogdir=/tmp                            ; (&#39;AUTO&#39; child log dir, default $TEMP)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;environment=KEY=value                       ; (key value pairs to add to environment)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;strip_ansi=false                            ; (strip ansi escape codes in logs; def. false)[supervisorctl]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">[rpcinterface:supervisor] ;用于外部程序或工具通过rpc接口与 Supervisor 通信和控制被监控的进程。比如supervisorctl，一定要添加，不然supervisorctl用不了</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">supervisor.rpcinterface_factory</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">supervisor.rpcinterface:make_main_rpcinterface</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">[supervisorctl]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">serverurl</span><span style="color:#f92672">=</span><span style="color:#e6db74">unix:///var/run/supervisor.sock ; supervisorctl通过socket连接supervisord服务端，路径需要和与unix_http_server中的file一致，该方式也就是通过本地的方式连接</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;如果你想通过网络http的方式可以使用下面的配置，但是下面和上面的serverurl不能共存，切记</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;serverurl=http://127.0.0.1:9001            ;通过HTTP的方式连接supervisord</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;username=chris                             ; should be same as http_username if set</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;password=123                               ; should be same as http_password if set</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;prompt=mysupervisor                        ; cmd line prompt (default &#34;supervisor&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;history_file=~/.sc_history                 ; use readline history if available;[program:xx]是被管理的进程配置参数，xx是进程的名称</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">[include]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">files</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">/etc/supervisor/conf.d/*.ini    ;相当于是引入其他的配置文件进来，支持ini和conf，一般program配置我们不会写在当前配置文件中，都会单独写在外面，所以就可以通过include进行引入</span>
+</span></span></code></pre></div><p><strong>修改完配置文件之后先查看是否已启动<code>supervisord</code>，如果启动需要重启加载我们新更新的配置</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 查看进程</span>
+</span></span><span style="display:flex;"><span>root@bj-ubuntu-eayon:~# ps -ef | grep supervisord
+</span></span><span style="display:flex;"><span>root     <span style="color:#ae81ff">3463154</span>       <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">0</span> Sep02 ?        00:00:09 /usr/bin/python3 /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+</span></span><span style="display:flex;"><span>root     <span style="color:#ae81ff">3878074</span> <span style="color:#ae81ff">3876890</span>  <span style="color:#ae81ff">0</span> 12:06 pts/0    00:00:00 vim supervisord.conf
+</span></span><span style="display:flex;"><span>root     <span style="color:#ae81ff">3894307</span> <span style="color:#ae81ff">3893980</span>  <span style="color:#ae81ff">0</span> 13:12 pts/2    00:00:00 grep --color<span style="color:#f92672">=</span>auto supervisord
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># kill supervisord</span>
+</span></span><span style="display:flex;"><span>root@bj-ubuntu-eayon:~# kill -9 <span style="color:#ae81ff">3463154</span>
+</span></span></code></pre></div><p><strong>指定<code>supervisord.conf</code>配置文件启动<code>supervisord</code></strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>supervisord -c /etc/supervisor/supervisord.conf
+</span></span></code></pre></div><p>如果出现<code>Unlinking stale socket /var/run/supervisor.sock</code>错误，可以通过<code>sudo rm /var/run/supervisor.sock</code>删除后重试</p>
+<p>启动好之后建议通过<code>ps -ef | grep supervisord</code>查看启动进程，如果出现两个的话讲最旧的进行删除。</p>
+<p><strong>访问Web</strong></p>
+<p><img loading="lazy" src="/img/tech/linux/supervisor_web1.png" alt="web1"  />
+</p>
+<h3 id="42-program-子进程配置文件">4.2 Program 子进程配置文件<a hidden class="anchor" aria-hidden="true" href="#42-program-子进程配置文件">#</a></h3>
+<p>比如我们现在想要通过Supervisor来管理一个Nginx，首先先下载一个Nginx</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt install nginx
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 下载完之后他会默认启动，可以看一下</span>
+</span></span><span style="display:flex;"><span>root@bj-ubuntu-eayon:/opt# systemctl status nginx
+</span></span><span style="display:flex;"><span>● nginx.service - A high performance web server and a reverse proxy server
+</span></span><span style="display:flex;"><span>     Loaded: loaded <span style="color:#f92672">(</span>/lib/systemd/system/nginx.service; enabled; vendor preset: enabled<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     Active: active <span style="color:#f92672">(</span>running<span style="color:#f92672">)</span> since Sun 2023-09-03 14:41:16 CST; 13s ago
+</span></span><span style="display:flex;"><span>       Docs: man:nginx<span style="color:#f92672">(</span>8<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>   Main PID: <span style="color:#ae81ff">3936874</span> <span style="color:#f92672">(</span>nginx<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>      Tasks: <span style="color:#ae81ff">3</span> <span style="color:#f92672">(</span>limit: 2262<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>     Memory: 5.4M
+</span></span><span style="display:flex;"><span>     CGroup: /system.slice/nginx.service
+</span></span><span style="display:flex;"><span>             ├─3936874 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+</span></span><span style="display:flex;"><span>             ├─3936875 nginx: worker process
+</span></span><span style="display:flex;"><span>             └─3936876 nginx: worker process
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 那我们先把它给kill掉</span>
+</span></span><span style="display:flex;"><span>root@bj-ubuntu-eayon:/opt# ps -ef | grep nginx
+</span></span><span style="display:flex;"><span>root     <span style="color:#ae81ff">3936874</span>       <span style="color:#ae81ff">1</span>  <span style="color:#ae81ff">0</span> 14:41 ?        00:00:00 nginx: master process /usr/sbin/nginx -g daemon on; master_process on;
+</span></span><span style="display:flex;"><span>www-data <span style="color:#ae81ff">3936875</span> <span style="color:#ae81ff">3936874</span>  <span style="color:#ae81ff">0</span> 14:41 ?        00:00:00 nginx: worker process
+</span></span><span style="display:flex;"><span>www-data <span style="color:#ae81ff">3936876</span> <span style="color:#ae81ff">3936874</span>  <span style="color:#ae81ff">0</span> 14:41 ?        00:00:00 nginx: worker process
+</span></span><span style="display:flex;"><span>root     <span style="color:#ae81ff">3937378</span> <span style="color:#ae81ff">3893980</span>  <span style="color:#ae81ff">0</span> 14:42 pts/2    00:00:00 grep --color<span style="color:#f92672">=</span>auto nginx
+</span></span><span style="display:flex;"><span>root@bj-ubuntu-eayon:/opt# kill -9 <span style="color:#ae81ff">3936874</span> <span style="color:#ae81ff">3936875</span> <span style="color:#ae81ff">3936876</span>
+</span></span></code></pre></div><p>Program配置文件就是配置我们要管理的进程的配置文件。当然也可以把下面所有配置项都写到 <code>supervisord.conf</code> 文件里，但并不推荐这样做，而是通过在<code>supervisord.conf</code>中通过<code>include</code> 的方式把不同的程序（组）写到不同的配置文件里。</p>
+<p>由于我们的<strong>子进程配置文件目录是</strong><code>/etc/supervisor/conf.d/</code>，所以我们需要在该目录下创建<code>/etc/supervisor/conf.d/nginx.ini</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#a6e22e">[program:nginx]             ; 当前被管理程序，格式: [program:xxx] 后面的名字可以随意</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">command</span><span style="color:#f92672">=</span><span style="color:#e6db74">/usr/sbin/nginx -g &#39;daemon off;&#39;   ; 程序启动命令，跟手动在命令行启动的命令是一样的</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">autostart</span><span style="color:#f92672">=</span><span style="color:#e6db74">true     ; 当前被管理程序是否随supervisord一起启动</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">startsecs</span><span style="color:#f92672">=</span><span style="color:#e6db74">10       ; 当前被管理程序启动10秒后没有异常退出，就表示进程正常启动了，默认为1秒，根据具体服务的启动时长进行改变，比如java就比较慢</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">autorestart</span><span style="color:#f92672">=</span><span style="color:#e6db74">true   ; 当前被管理程序退出后自动重启,可选值：[unexpected,true,false]，默认为unexpected，表示进程意外杀死后才重启</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">startretries</span><span style="color:#f92672">=</span><span style="color:#e6db74">1     ; 当前被管理程序启动失败自动重试次数，默认是3</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">user</span><span style="color:#f92672">=</span><span style="color:#e6db74">root          ; 用哪个用户启动当前被管理程序，默认是root</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">priority</span><span style="color:#f92672">=</span><span style="color:#e6db74">999       ; 当前被管理程序启动优先级，默认999，该值最小的优先启动</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">redirect_stderr</span><span style="color:#f92672">=</span><span style="color:#e6db74">true  ; 重定向stderr错误日志到stdout标准日志，默认false，一般都会重定向到一个</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stdout_logfile</span><span style="color:#f92672">=</span><span style="color:#e6db74">/var/log/nginx/nginx.log  ; 程序运行输出的stdout标准日志文件（正常运行日志），需要注意当指定目录不存在时无法正常启动，所以需要手动创建目录</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stdout_logfile_maxbytes</span><span style="color:#f92672">=</span><span style="color:#e6db74">20MB   ; stdout 日志文件大小，默认50MB</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">stdout_logfile_backups</span><span style="color:#f92672">=</span><span style="color:#e6db74">20      ; stdout 日志文件备份数，默认是10</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;stderr_logfile=/opt/apache-tomcat-8.5.87/logs/catalina.err   ; 程序运行输出的stderr错误日志文件输出路径</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;stderr_logfile_maxbytes=1MB    ; stderr 日志文件大小，默认50MB</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;stderr_logfile_backups=10      ; stderr 日志文件备份数，默认是10</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;stopasgroup=false              ; 默认为false，当前被管理程序被杀死时是否向这个进程组发送stop信号，包括子进程</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">;killasgroup=false               ; 默认为fakse，当前被管理程序被杀死时是否向这个进程组发送kill信号，包括子进程</span>
+</span></span></code></pre></div><p><strong>切记</strong>：配置中的日志输出路径和日志文件一定要提前创建，否则启动失败</p>
+<p><strong>当添加/修改子进程配置之后，可以使用<code>supervisorctl reread</code>进行配置检查，配置无误后通过<code>supervisorctl update</code>更新配置。</strong></p>
+<p>此时在后台就可以直接看见新增的子进程</p>
+<p><img loading="lazy" src="/img/tech/linux/supervisor_web2.png" alt="web2"  />
+</p>
+<h2 id="5-常用命令介绍">5 常用命令介绍<a hidden class="anchor" aria-hidden="true" href="#5-常用命令介绍">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>supervisorctl status nginx                             <span style="color:#75715e"># nginx状态</span>
+</span></span><span style="display:flex;"><span>supervisorctl stop nginx                               <span style="color:#75715e"># 停止nginx</span>
+</span></span><span style="display:flex;"><span>supervisorctl start nginx                              <span style="color:#75715e"># 启动nginx</span>
+</span></span><span style="display:flex;"><span>supervisorctl restart nginx                            <span style="color:#75715e"># 重启nginx</span>
+</span></span><span style="display:flex;"><span>supervisorctl reoload nginx                            <span style="color:#75715e"># 重载nginx</span>
+</span></span><span style="display:flex;"><span>supervisorctl update nginx                             <span style="color:#75715e"># 配置文件修改后可以使用该命令加载新的配置</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 所有子进程</span>
+</span></span><span style="display:flex;"><span>supervisorctl start all              <span style="color:#75715e"># 启动所有被监控的进程</span>
+</span></span><span style="display:flex;"><span>supervisorctl stop all               <span style="color:#75715e"># 停止所有被监控的进程</span>
+</span></span><span style="display:flex;"><span>supervisorctl restart all            <span style="color:#75715e"># 重启所有被监控的进程</span>
+</span></span><span style="display:flex;"><span>supervisorctl reload all             <span style="color:#75715e"># 重新加载所有被监控的进程的配置</span>
+</span></span><span style="display:flex;"><span>supervisorctl shutdown               <span style="color:#75715e"># 关闭Supervisor</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 主要针对supervisord.conf配置文件的刷新，而不需要重启 Supervisor 进程。当修改了supervisord.conf，例如增加或修改了进程配置时，使用 reload 命令可以应用这些更改。重要的是，reload 不会中断已经在运行的进程，只会影响新的配置更改。</span>
+</span></span><span style="display:flex;"><span>supervisorctl reload
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 检查supervisord配置和引入的子进程配置文件，如果配置文件没有问题，将显示 xxxxxxx: available</span>
+</span></span><span style="display:flex;"><span>supervisorctl reread        
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 主要针对子进程配置文件的刷新，它关注于管理和操作已定义的进程，而不会重新加载 supervisord.conf 的主配置文件。</span>
+</span></span><span style="display:flex;"><span>supervisorctl update
+</span></span></code></pre></div>
+
+        </div>
+        <div class="post-reward">
+            <div style="padding: 0 0 0 0; margin: 0 0 0 0; width: 100%; font-size:16px; text-align: center;">
+                <div id="QR" style="opacity: 0;">
+                    <div id="wechat" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="wechat_qr" src="https://eayonlee.com/img/wechat_pay.png" alt="wechat_pay"></a>
+                        <p>微信</p>
+                    </div>
+                    <div id="alipay" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="alipay_qr" src="https://eayonlee.com/img/alipay.png" alt="alipay"></a>
+                        <p>支付宝</p>
+                    </div>
+                </div>
+                <button id="rewardButton"
+                        onclick="
+                    var qr = document.getElementById('QR');
+                    if (qr.style.opacity === '0') {
+                        qr.style.opacity='1';
+                    } else {
+                        qr.style.opacity='0'
+                    }"
+                >
+                    <span>☕️ By me a coffee</span>
+                </button>
+            </div>
+        </div>
+
+        <footer class="post-footer">
+            
+
+        </footer>
+    </div>
+
+<style>
+    .comments_details summary::marker {
+        font-size: 20px;
+        content: '👉展开评论';
+        color: var(--content);
+    }
+    .comments_details[open] summary::marker{
+        font-size: 20px;
+        content: '👇关闭评论';
+        color: var(--content);
+    }
+</style>
+
+
+<div>
+    <details class="comments_details">
+        <summary style="cursor: pointer; margin: 50px 0 20px 0;width: 130px;">
+            <span style="font-size: 20px;color: var(--content);">...</span>
+        </summary>
+        <div id="tcomment"></div>
+    </details>
+    <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js">
+    </script>
+    <script>
+        twikoo.init({
+            envId:  null ,
+        el: "#tcomment",
+            lang: 'zh-CN',
+            region:  null ,
+        path: window.TWIKOO_MAGIC_PATH||window.location.pathname,
+        })
+    </script>
+</div>
+</article>
+</main>
+
+<footer class="footer">
+    <span>
+        Copyright
+        &copy;
+        2020-2023
+        <a href="https://eayonlee.com" style="color:#939393;">Eayon&#39;s Blog</a>
+        All Rights Reserved
+    </span>
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color:#939393;">京ICP备2023014718号</a>&nbsp;
+    <span>
+        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=null"
+           style="display:inline-block;text-decoration:none;height:20px;color:#939393;">
+            <img src="https://www.sulvblog.cn/img/beian.png" style="float:left;margin: 0px 5px 0px 0px;"/>
+            京公网安备 11010802042316号
+        </a>
+    </span>
+    <span id="busuanzi_container">
+        <span class="fa fa-user"></span> <span id="busuanzi_value_site_uv"></span>
+        <span class="fa fa-eye"></span> <span id="busuanzi_value_site_pv"></span>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <span class="topInner">
+        <svg class="topSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+            <path d="M12 6H0l6-6z"/>
+        </svg>
+        <span id="read_progress"></span>
+    </span>
+</a>
+
+<script>
+    document.addEventListener('scroll', function (e) {
+        const readProgress = document.getElementById("read_progress");
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        readProgress.innerText = ((scrollTop / (scrollHeight - clientHeight)).toFixed(2) * 100).toFixed(0);
+    })
+</script>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+</script>
+<script>
+    let mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        (function() {
+            document.cookie = "change-themes" + "="+ escape ("false");
+        })()
+
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    });
+</script>
+
+<script>
+    document.body.addEventListener('copy', function (e) {
+        if (window.getSelection().toString() && window.getSelection().toString().length > 50) {
+            let clipboardData = e.clipboardData || window.clipboardData;
+            if (clipboardData) {
+                e.preventDefault();
+                let htmlData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                let textData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                clipboardData.setData('text/html', htmlData);
+                clipboardData.setData('text/plain', textData);
+            }
+        }
+    });
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerText = '复制';
+
+        function copyingDone() {
+            copybutton.innerText = '已复制！';
+            setTimeout(() => {
+                copybutton.innerText = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                let text = codeblock.textContent +
+                    '\r\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                navigator.clipboard.writeText(text);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) {}
+            selection.removeRange(range);
+        });
+
+        let language = codeblock.className.replaceAll("language-", "")
+        let macTool = document.createElement("div")
+        let macTool1 = document.createElement("div")
+        let macTool2 = document.createElement("div")
+        let macTool3 = document.createElement("div")
+        let languageType = document.createElement("div")
+        languageType.innerText = language
+        macTool.setAttribute('class', 'mac-tool')
+        macTool1.setAttribute('class', 'mac bb1')
+        macTool2.setAttribute('class', 'mac bb2')
+        macTool3.setAttribute('class', 'mac bb3')
+        languageType.setAttribute('class', 'language-type')
+        macTool.appendChild(macTool1)
+        macTool.appendChild(macTool2)
+        macTool.appendChild(macTool3)
+        macTool.appendChild(languageType)
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        }
+    });
+</script>
+</body>
+
+</html>

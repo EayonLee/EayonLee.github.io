@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>RAID磁盘阵列 | Eayon&#39;s Blog</title>
+<meta name="keywords" content="运维, Linux, RAID, 存储">
+<meta name="description" content="RAID磁盘阵列详解">
+<meta name="author" content="Eayon">
+<link rel="canonical" href="https://eayonlee.com/tech/storage/raid%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.css" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.js" onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://eayonlee.com/img/avatar.png">
+<link rel="apple-touch-icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="mask-icon" href="https://eayonlee.com/img/avatar.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js"></script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = ""; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<meta property="og:title" content="RAID磁盘阵列" />
+<meta property="og:description" content="RAID磁盘阵列详解" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://eayonlee.com/tech/storage/raid%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97/" />
+<meta property="og:image" content="https://eayonlee.com/img/tech/storage/202308281404257.png" /><meta property="article:section" content="tech" />
+<meta property="article:published_time" content="2023-09-09T09:51:28+08:00" />
+<meta property="article:modified_time" content="2023-09-09T09:51:28+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://eayonlee.com/img/tech/storage/202308281404257.png" />
+<meta name="twitter:title" content="RAID磁盘阵列"/>
+<meta name="twitter:description" content="RAID磁盘阵列详解"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+        {
+          "@type": "ListItem",
+          "position":  2 ,
+          "name": "👨‍💻 Technology",
+          "item": "https://eayonlee.com/tech/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position":  3 ,
+          "name": "存储",
+          "item": "https://eayonlee.com/tech/storage/"
+        }, 
+    {
+      "@type": "ListItem",
+      "position":  4 ,
+      "name": "RAID磁盘阵列",
+      "item": "https://eayonlee.com/tech/storage/raid%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "RAID磁盘阵列",
+  "name": "RAID磁盘阵列",
+  "description": "RAID磁盘阵列详解",
+  "keywords": [
+    "运维", "Linux", "RAID", "存储"
+  ],
+  "articleBody": "前言 随着我们日常生活工作中需要再电脑上存储的数据量不断增多。如一个3A大作，上百G都不足为奇，蓝光4K超清资源，一部也有70/80G。存储空间不够了怎么办？买硬盘。OK！硬盘到手了，但每个硬盘各有一个分区，七八个盘符看着就闹心。比较重要的数据，想要保险点，还要手动备份到另一块硬盘。如何能够充分利用，多硬盘的优势呢？那就不得不提下磁盘阵列（RAID），一起来了解下～\n1、什么是 RAID RAID（Redundant Array of Independent Disks，独立磁盘冗余阵列）\n其主要核心是把多块独立的磁盘，组成成一个容量巨大的磁盘组，且通过冗余存储提高容错能力。\n2、RAID 物理分类 RAID在物理层面主要分为：软RAID和硬RAID\n2.1、硬RAID 由图可见硬RAID主要有两种方式：\n**阵列柜：**价格较贵，一般用于企业级应用。\n**阵列卡：**价格便宜，适用于普通用户。市面上大部分阵列卡有缓存，可以提升读写速度，且可通过阵列卡中的电池在意外断电的情况下保持缓存中的数据，等供电恢复时再继续写入。\nPS：千万不要尝试使用主板RAID功能，一旦主板要是出现超频失败、电池没电等问题都非常容易导致阵列信息丢失\n硬RAID主要是由专门的RAID控制器来实现RAID功能，且硬RAID通常比软RAID的性能要好，这是因为硬RAID控制器具有专用的处理器和内存，并且不会受到操作系统的负载和其他应用程序的干扰，而软RAID的性能则取决于CPU和操作系统的负载。\n2.2、软RAID 软RAID是通过操作系统和软件来实现RAID功能，它并不想硬RAID的一样有独立的控制器，所以早期的软RAID并不稳定，速度也不及硬RAID，但随着技术不断优化，软硬RAID的差距也就不那么明显了。像大家常见的NAS中通常都是软RAID。\n3、常用 RAID 级别 RAID 是一种通过将多个磁盘组合起来形成一个逻辑硬盘的技术。而且RAID可以分为不同的级别，每个级别具有不同的数据保护和性能特征。\n主要分为标准 RAID（RAID 0 ~ RAID 6）、混合 RAID（JBOD、RAID 7、RAID 10/0、RAID 50 等）\n3.1、RAID 0 RAID0 是一种非常简单的方式，比如我们拿2块磁盘使用RAID0级别。当写入数据时会将一条数据分为不相同的2份，这2份数据会并发的写入到2块磁盘中，相当于每个磁盘存储了一条数据的一半，并不会进行数据的冗余备份，因此读写性能非常高。\n但也正因为它不会对数据校验或冗余备份，因此一旦某块磁盘坏了，数据就直接丢失无法恢复。\nRAID0至少需要两块磁盘，可以使用任意数量的磁盘。每个磁盘的容量不必相同，但是最终的磁盘阵列容量等于最小容量的磁盘乘以磁盘数量。例如：有3块磁盘，分别为500GB、1TB、2TB，那么RAID0的容量为500GB*3=1.5TB\n那有没有可以让存储可靠性变高的方案呢？那就是下面的RAID1\n3.2、RAID 1 RAID1简单理解就是将数据完全备份到另一个磁盘上，也成为镜像。它的有点时可以提高数据的安全性和可靠性，因为每个磁盘都有一份完整的数据副本。如果某个磁盘出现故障，其他硬盘仍然可以正常工作，数据不会丢失。但是缺点就在于降低了存储空间利用率和写入性能，因为每写入一条数据就要无差别的写入到所有磁盘当中。\nRAID1至少需要2块磁盘，可以使用任意偶数数量的磁盘。每个磁盘的容量不必相同，但是最终的磁盘阵列容量等于最小容量的磁盘。例如：如果有4块磁盘，分别为500GB、1TB、2TB和4TB，那么RAID1的磁盘阵列总容量未500GB。\n3.3、RAID5 RAID5因为存储性能、数据安全、存储成本都兼顾，所以是目前使用较多的一种级别。\n在了解RAID5之前，我们可以简单看一下RAID3，虽然RAID3用的很少，但清楚了3就很容易明白5的思路。\nRAID3的方式是：将数据按照RAID0的形式，分成多份然后并发写入多块磁盘，但是还会额外留出一块磁盘用于写奇偶校验码。例如总共有3块磁盘，那么就会让其中2块磁盘来并发的写入数据，第3块磁盘用来记录奇偶校验码。当某块数据盘坏掉时可以通过校验盘对数据进行恢复。\n但由于每写入一条数据都需要去更新校验盘，所以就会导致校验盘的负载较高，也就非常容易损坏。当校验盘损坏了也就无法进行数据恢复了。\nRAID5的方式可以说是对RAID3进行了改进。在RAID5的模式中，不需要单独用一个磁盘记录奇偶校验码，它会把奇偶校验码分布在各个磁盘中。例如，总共有3块磁盘，那么会将要写入的数据分成3份，并发写入3块磁盘中，同时还将数据的奇偶校验码信息也写入到这3块磁盘中（数据对应的校验码必须存储在不同的磁盘上）。一旦某一块磁盘损坏，就可以通过剩下的磁盘中的校验码信息进行数据恢复。\nRAID5校验位算法原理：P = D1 xor D2 xor D3 … xor Dn （D1,D2,D3 … Dn为数据块，P为校验，xor为异或运算）\nRAID5的方式，最少需要三块磁盘来组建磁盘阵列，允许最多同时坏一块磁盘。如果有两块磁盘同时损坏了，那数据就无法恢复了。\nRAID5可以使用任意数量的硬盘。每个硬盘的容量不必相同，但是最终的磁盘阵列容量等于最小容量的硬盘乘以硬盘数量减一。例如，如果有五块硬盘，分别为500GB、1TB、2TB、3TB和4TB，那么RAID5的容量为500GB x (5 - 1) = 2TB。\n3.4、RAID6 为了进一步提高存储的高可用，大佬们又提出了RAID6方案，可以在有两块磁盘同时损坏的情况下，也能保障数据可恢复。\n为什么RAID6这么牛呢，因为RAID6在RAID5的基础上再次改进，引入了双重校验的概念。\nRAID6除了每块磁盘上都有同级数据XOR校验区以外，还有针对每个数据块的XOR校验区，这样的话，相当于每个数据块有两个校验保护措施，因此数据的冗余性更高了。\n但是RAID6的这种设计也带来了很高的复杂度，虽然数据冗余性好，读取的效率也比较高，但是写数据的性能就很差。因此RAID6在实际环境中应用的比较少。\n3.5、RAID10 RAID10是一种将RAID1和RAID0结合起来的方法，也称为镜像条带化（mirrored striping）。\n比如我们现在有4个磁盘，将4个磁盘分为两组（每组2个磁盘），当我们写入一条数据的时候首先会基于RAID0将一条数据分为不相同的2份，这2份数据会并发的写入到2组磁盘中，相当于每组磁盘存储了一条数据的一半。此时再每组磁盘的基础上使用RAID1，将这条数据的一半并发写入到当前磁盘组的所有磁盘中进行冗余备份。\n但也可以看出RAID10模式是有一半的磁盘空间用于存储冗余数据的，浪费的很严重，因此用的也不是很多。\n4、总结 RAID级别 最少磁盘数 容量公式 优点 缺点 RAID0 2 N*S 高速读写 无冗余备份，可靠性低 RAID1 2 S 数据可靠 空间利用率低 RAID5 3 (N - 1) * S 平衡 写性能低 RAID10 4 (N / 2) * S 高速且高可靠 空间利用率低 ",
+  "wordCount" : "2770",
+  "inLanguage": "zh",
+  "image":"https://eayonlee.com/img/tech/storage/202308281404257.png","datePublished": "2023-09-09T09:51:28+08:00",
+  "dateModified": "2023-09-09T09:51:28+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Eayon"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://eayonlee.com/tech/storage/raid%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Eayon's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://eayonlee.com/img/avatar.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://eayonlee.com" accesskey="h" title="Eayon (Alt + H)">
+            <img src="https://eayonlee.com/img/avatar.png" alt="logo" aria-label="logo"
+                 height="35">Eayon</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://eayonlee.com/search" title="🔍Search (Alt &#43; /)" accesskey=/>
+                <span>🔍Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/" title="Home">
+                <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tech" title="👨🏻‍💻 Tech">
+                <span>👨🏻‍💻 Tech</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/archives" title="Archives">
+                <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tags" title="Tags">
+                <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/about" title="About">
+                <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/links" title="Links">
+                <span>Links</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main page">
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+</style>
+
+<article class="post-single">
+    <div id="single-content">
+        <header class="post-header">
+            <div class="breadcrumbs"><a href="https://eayonlee.com">🏠 主页</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/">👨‍💻 Technology</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/storage/">存储</a></div>
+            <h1 class="post-title">
+                RAID磁盘阵列
+            </h1>
+            <div class="post-description">
+                RAID磁盘阵列详解
+            </div>
+            <div class="post-meta">
+
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+
+    .parent-post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        opacity: 0.8;
+    }
+</style>
+
+<span class="parent-post-meta">
+    <span id="post_meta_style_1">
+        <span class="fa fa-calendar-check-o"></span>
+        <span>2023-09-09
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    
+    
+    
+    
+    
+    
+    
+    <span id="post_meta_style_3">
+        <span class="fa fa-file-word-o"></span>
+        <span>2770字
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_4">
+        <span class="fa fa-clock-o"></span>
+        <span>6分钟
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_5">
+        <span class="fa fa-user-o"></span>
+        <span>Eayon
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_6">
+        <span class="fa fa-tags" style="opacity: 0.8"></span>
+        <span>
+            <span class="post-tags-meta">
+                <a href="https://eayonlee.com/tags/%E8%BF%90%E7%BB%B4/" style="color: var(--secondary)!important;">运维</a>
+                &nbsp;<a href="https://eayonlee.com/tags/linux/" style="color: var(--secondary)!important;">Linux</a>
+                &nbsp;<a href="https://eayonlee.com/tags/raid/" style="color: var(--secondary)!important;">RAID</a>
+                &nbsp;<a href="https://eayonlee.com/tags/%E5%AD%98%E5%82%A8/" style="color: var(--secondary)!important;">存储</a>
+            </span>
+        </span>
+    </span>
+</span>
+<span style="opacity: 0.8;">
+                    <span id="post_meta_style_7">
+                        &nbsp;&nbsp;
+                        <span class="fa fa-eye" ></span>
+                        <span>
+                            <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+                            &nbsp;&nbsp;
+                        </span>
+                    </span>
+                    <span id="post_meta_style_8">
+                        <span class="fa fa-commenting-o"></span>
+                        <span>
+                            <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js"></script>
+                            <script>
+                                let url = document.documentURI
+                                
+                                let dnsUrl = "https://eayonlee.com"
+                                let urlSplit = url.split(dnsUrl)
+                                let finalUrl = urlSplit[1]
+                                if (finalUrl[0] !== '/') {
+                                    finalUrl = '/'+finalUrl
+                                }
+                                twikoo.getCommentsCount({
+                                    envId:  null , 
+                                region:  null , 
+                                urls: [ 
+                                    
+                                    finalUrl,
+                                ],
+                                    includeReply: false 
+                                }).then(function (res) {
+                                    let count = res[0].count
+                                    const obj = document.getElementById("comment_count");
+                                    obj.innerText = count
+                                    
+                                    
+                                    
+                                }).catch(function (err) {
+                                    
+                                    console.error(err);
+                                });
+                            </script>
+                            <span id="comment_count"></span>
+                        </span>
+                    </span>
+                </span>
+
+</div>
+        </header> 
+<figure class="entry-cover1"><img style="zoom:;" loading="lazy" src="https://eayonlee.com/img/tech/storage/202308281404257.png" alt="">
+    
+</figure><aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e5%89%8d%e8%a8%80" aria-label="前言">前言</a></li>
+                <li>
+                    <a href="#1%e4%bb%80%e4%b9%88%e6%98%af-raid" aria-label="1、什么是 RAID">1、什么是 RAID</a></li>
+                <li>
+                    <a href="#2raid-%e7%89%a9%e7%90%86%e5%88%86%e7%b1%bb" aria-label="2、RAID 物理分类">2、RAID 物理分类</a><ul>
+                        
+                <li>
+                    <a href="#21%e7%a1%acraid" aria-label="2.1、硬RAID">2.1、硬RAID</a></li>
+                <li>
+                    <a href="#22%e8%bd%afraid" aria-label="2.2、软RAID">2.2、软RAID</a></li></ul>
+                </li>
+                <li>
+                    <a href="#3%e5%b8%b8%e7%94%a8-raid-%e7%ba%a7%e5%88%ab" aria-label="3、常用 RAID 级别">3、常用 RAID 级别</a><ul>
+                        
+                <li>
+                    <a href="#31raid-0" aria-label="3.1、RAID 0">3.1、RAID 0</a></li>
+                <li>
+                    <a href="#32raid-1" aria-label="3.2、RAID 1">3.2、RAID 1</a></li>
+                <li>
+                    <a href="#33raid5" aria-label="3.3、RAID5">3.3、RAID5</a></li>
+                <li>
+                    <a href="#34raid6" aria-label="3.4、RAID6">3.4、RAID6</a></li>
+                <li>
+                    <a href="#35raid10" aria-label="3.5、RAID10">3.5、RAID10</a></li></ul>
+                </li>
+                <li>
+                    <a href="#4%e6%80%bb%e7%bb%93" aria-label="4、总结">4、总结</a>
+                </li>
+            </ul>
+        </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+        
+        activeElement = elements[0];
+        const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+        document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+    }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        if (elements) {
+            activeElement = Array.from(elements).find((element) => {
+                if ((getOffsetTop(element) - window.pageYOffset) > 0 &&
+                    (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                    return element;
+                }
+            }) || activeElement
+
+            elements.forEach(element => {
+                const id = encodeURI(element.getAttribute('id')).toLowerCase();
+                if (element === activeElement){
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+                } else {
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+                }
+            })
+        }
+    }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;
+    }
+</script>
+        <div class="post-content"><h2 id="前言">前言<a hidden class="anchor" aria-hidden="true" href="#前言">#</a></h2>
+<p>随着我们日常生活工作中需要再电脑上存储的数据量不断增多。如一个3A大作，上百G都不足为奇，蓝光4K超清资源，一部也有70/80G。存储空间不够了怎么办？买硬盘。OK！硬盘到手了，但每个硬盘各有一个分区，七八个盘符看着就闹心。比较重要的数据，想要保险点，还要手动备份到另一块硬盘。如何能够充分利用，多硬盘的优势呢？那就不得不提下<strong>磁盘阵列（RAID）</strong>，一起来了解下～</p>
+<h2 id="1什么是-raid">1、什么是 RAID<a hidden class="anchor" aria-hidden="true" href="#1什么是-raid">#</a></h2>
+<p><strong>RAID（Redundant Array of Independent Disks，独立磁盘冗余阵列）</strong></p>
+<p>其主要核心是把多块<strong>独立的磁盘</strong>，<strong>组成</strong>成一个容量巨大的<strong>磁盘组</strong>，且通过<strong>冗余存储</strong>提高容错能力。</p>
+<h2 id="2raid-物理分类">2、RAID 物理分类<a hidden class="anchor" aria-hidden="true" href="#2raid-物理分类">#</a></h2>
+<p>RAID在物理层面主要分为：<strong>软RAID</strong>和<strong>硬RAID</strong></p>
+<p><img loading="lazy" src="/img/tech/storage/202308281404257.png" alt="image-20230828140416165"  />
+</p>
+<h3 id="21硬raid">2.1、硬RAID<a hidden class="anchor" aria-hidden="true" href="#21硬raid">#</a></h3>
+<p><img loading="lazy" src="/img/tech/storage/202308281408577.png" alt="image-20230828140835344"  />
+</p>
+<p>由图可见硬RAID主要有两种方式：</p>
+<ul>
+<li>
+<p>**阵列柜：**价格较贵，一般用于企业级应用。</p>
+</li>
+<li>
+<p>**阵列卡：**价格便宜，适用于普通用户。市面上大部分阵列卡有缓存，可以提升读写速度，且可通过阵列卡中的电池在意外断电的情况下保持缓存中的数据，等供电恢复时再继续写入。</p>
+</li>
+</ul>
+<blockquote>
+<p>PS：千万不要尝试使用主板RAID功能，一旦主板要是出现超频失败、电池没电等问题都非常容易导致阵列信息丢失</p>
+</blockquote>
+<p>硬RAID主要是由专门的RAID控制器来实现RAID功能，且硬RAID通常比软RAID的性能要好，这是因为硬RAID控制器具有专用的处理器和内存，并且不会受到操作系统的负载和其他应用程序的干扰，而软RAID的性能则取决于CPU和操作系统的负载。</p>
+<h3 id="22软raid">2.2、软RAID<a hidden class="anchor" aria-hidden="true" href="#22软raid">#</a></h3>
+<p>软RAID是通过操作系统和软件来实现RAID功能，它并不想硬RAID的一样有独立的控制器，所以早期的软RAID并不稳定，速度也不及硬RAID，但随着技术不断优化，软硬RAID的差距也就不那么明显了。像大家常见的NAS中通常都是软RAID。</p>
+<h2 id="3常用-raid-级别">3、常用 RAID 级别<a hidden class="anchor" aria-hidden="true" href="#3常用-raid-级别">#</a></h2>
+<p>RAID 是一种通过将多个磁盘组合起来形成一个逻辑硬盘的技术。而且RAID可以分为不同的级别，每个级别具有不同的数据保护和性能特征。</p>
+<p>主要分为<strong>标准 RAID</strong>（RAID 0 ~ RAID 6）、<strong>混合 RAID</strong>（JBOD、RAID 7、RAID 10/0、RAID 50 等）</p>
+<h3 id="31raid-0">3.1、RAID 0<a hidden class="anchor" aria-hidden="true" href="#31raid-0">#</a></h3>
+<p>RAID0 是一种非常简单的方式，比如我们拿2块磁盘使用RAID0级别。当写入数据时会将一条数据分为不相同的2份，这2份数据会并发的写入到2块磁盘中，相当于每个磁盘存储了一条数据的一半，并不会进行数据的冗余备份，因此读写性能非常高。</p>
+<p><img loading="lazy" src="/img/tech/storage/raid0.png" alt="raid0"  />
+</p>
+<p>但也正因为它不会对数据校验或冗余备份，因此一旦某块磁盘坏了，数据就直接丢失无法恢复。</p>
+<p>RAID0至少需要两块磁盘，可以使用任意数量的磁盘。每个磁盘的容量不必相同，但是最终的磁盘阵列容量等于最小容量的磁盘乘以磁盘数量。例如：有3块磁盘，分别为500GB、1TB、2TB，那么RAID0的容量为<code>500GB*3=1.5TB</code></p>
+<p>那有没有可以让存储可靠性变高的方案呢？那就是下面的RAID1</p>
+<h3 id="32raid-1">3.2、RAID 1<a hidden class="anchor" aria-hidden="true" href="#32raid-1">#</a></h3>
+<p><img loading="lazy" src="/img/tech/storage/raid1.png" alt="raid1"  />
+</p>
+<p>RAID1简单理解就是将数据完全备份到另一个磁盘上，也成为镜像。它的有点时可以提高数据的安全性和可靠性，因为每个磁盘都有一份完整的数据副本。如果某个磁盘出现故障，其他硬盘仍然可以正常工作，数据不会丢失。但是缺点就在于降低了存储空间利用率和写入性能，因为每写入一条数据就要无差别的写入到所有磁盘当中。</p>
+<p>RAID1至少需要2块磁盘，可以使用任意<strong>偶数数量</strong>的磁盘。每个磁盘的容量不必相同，但是最终的磁盘阵列容量等于最小容量的磁盘。例如：如果有4块磁盘，分别为500GB、1TB、2TB和4TB，那么RAID1的磁盘阵列总容量未500GB。</p>
+<h3 id="33raid5">3.3、RAID5<a hidden class="anchor" aria-hidden="true" href="#33raid5">#</a></h3>
+<p>RAID5因为存储性能、数据安全、存储成本都兼顾，所以是目前使用较多的一种级别。</p>
+<p>在了解RAID5之前，我们可以简单看一下RAID3，虽然RAID3用的很少，但清楚了3就很容易明白5的思路。</p>
+<p>RAID3的方式是：将数据按照RAID0的形式，分成多份然后并发写入多块磁盘，但是还会额外留出一块磁盘用于写<strong>奇偶校验码</strong>。例如总共有3块磁盘，那么就会让其中2块磁盘来并发的写入数据，第3块磁盘用来记录<strong>奇偶校验码</strong>。当某块数据盘坏掉时可以通过校验盘对数据进行恢复。</p>
+<p>但由于每写入一条数据都需要去更新校验盘，所以就会导致校验盘的负载较高，也就非常容易损坏。当校验盘损坏了也就无法进行数据恢复了。</p>
+<p>RAID5的方式可以说是对RAID3进行了改进。在RAID5的模式中，不需要单独用一个磁盘记录奇偶校验码，它会把奇偶校验码分布在各个磁盘中。例如，总共有3块磁盘，那么会将要写入的数据分成3份，并发写入3块磁盘中，同时还将数据的奇偶校验码信息也写入到这3块磁盘中（数据对应的校验码必须存储在不同的磁盘上）。一旦某一块磁盘损坏，就可以通过剩下的磁盘中的校验码信息进行数据恢复。</p>
+<p><img loading="lazy" src="/img/tech/storage/raid5.png" alt="raid5"  />
+</p>
+<p>RAID5校验位算法原理：<code>P = D1 xor D2 xor D3 … xor Dn</code> （D1,D2,D3 … Dn为数据块，P为校验，xor为异或运算）</p>
+<p>RAID5的方式，<strong>最少需要三块磁盘</strong>来组建磁盘阵列，允许<strong>最多同时坏一块磁盘</strong>。如果有两块磁盘同时损坏了，那数据就无法恢复了。</p>
+<p>RAID5可以使用任意数量的硬盘。每个硬盘的容量不必相同，但是最终的磁盘阵列容量等于最小容量的硬盘乘以硬盘数量减一。例如，如果有五块硬盘，分别为500GB、1TB、2TB、3TB和4TB，那么RAID5的容量为<code>500GB x (5 - 1) = 2TB</code>。</p>
+<h3 id="34raid6">3.4、RAID6<a hidden class="anchor" aria-hidden="true" href="#34raid6">#</a></h3>
+<p>为了进一步提高存储的高可用，大佬们又提出了RAID6方案，可以在有两块磁盘同时损坏的情况下，也能保障数据可恢复。</p>
+<p>为什么RAID6这么牛呢，因为RAID6在RAID5的基础上再次改进，引入了双重校验的概念。</p>
+<p>RAID6除了每块磁盘上都有同级数据<strong>XOR校验区</strong>以外，还有针对每个数据块的XOR校验区，这样的话，相当于每个数据块有两个校验保护措施，因此数据的冗余性更高了。</p>
+<p>但是RAID6的这种设计也带来了很高的复杂度，虽然数据冗余性好，读取的效率也比较高，但是写数据的性能就很差。因此RAID6在实际环境中应用的比较少。</p>
+<h3 id="35raid10">3.5、RAID10<a hidden class="anchor" aria-hidden="true" href="#35raid10">#</a></h3>
+<p>RAID10是一种将RAID1和RAID0结合起来的方法，也称为镜像条带化（mirrored striping）。</p>
+<p><img loading="lazy" src="/img/tech/storage/raid10.png" alt="raid10"  />
+</p>
+<p>比如我们现在有4个磁盘，将4个磁盘分为两组（每组2个磁盘），当我们写入一条数据的时候首先会基于RAID0将一条数据分为不相同的2份，这2份数据会并发的写入到2组磁盘中，相当于每组磁盘存储了一条数据的一半。此时再每组磁盘的基础上使用RAID1，将这条数据的一半并发写入到当前磁盘组的所有磁盘中进行冗余备份。</p>
+<p>但也可以看出RAID10模式是有一半的磁盘空间用于存储冗余数据的，浪费的很严重，因此用的也不是很多。</p>
+<h2 id="4总结">4、总结<a hidden class="anchor" aria-hidden="true" href="#4总结">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>RAID级别</th>
+<th>最少磁盘数</th>
+<th>容量公式</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAID0</td>
+<td>2</td>
+<td>N*S</td>
+<td>高速读写</td>
+<td>无冗余备份，可靠性低</td>
+</tr>
+<tr>
+<td>RAID1</td>
+<td>2</td>
+<td>S</td>
+<td>数据可靠</td>
+<td>空间利用率低</td>
+</tr>
+<tr>
+<td>RAID5</td>
+<td>3</td>
+<td>(N - 1) * S</td>
+<td>平衡</td>
+<td>写性能低</td>
+</tr>
+<tr>
+<td>RAID10</td>
+<td>4</td>
+<td>(N / 2) * S</td>
+<td>高速且高可靠</td>
+<td>空间利用率低</td>
+</tr>
+</tbody>
+</table>
+
+
+        </div>
+        <div class="post-reward">
+            <div style="padding: 0 0 0 0; margin: 0 0 0 0; width: 100%; font-size:16px; text-align: center;">
+                <div id="QR" style="opacity: 0;">
+                    <div id="wechat" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="wechat_qr" src="https://eayonlee.com/img/wechat_pay.png" alt="wechat_pay"></a>
+                        <p>微信</p>
+                    </div>
+                    <div id="alipay" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="alipay_qr" src="https://eayonlee.com/img/alipay.png" alt="alipay"></a>
+                        <p>支付宝</p>
+                    </div>
+                </div>
+                <button id="rewardButton"
+                        onclick="
+                    var qr = document.getElementById('QR');
+                    if (qr.style.opacity === '0') {
+                        qr.style.opacity='1';
+                    } else {
+                        qr.style.opacity='0'
+                    }"
+                >
+                    <span>☕️ By me a coffee</span>
+                </button>
+            </div>
+        </div>
+
+        <footer class="post-footer">
+            
+<nav class="paginav">
+  <a class="next" href="https://eayonlee.com/tech/linux/supervisor%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Supervisor进程管理工具</span>
+  </a>
+</nav>
+
+        </footer>
+    </div>
+
+<style>
+    .comments_details summary::marker {
+        font-size: 20px;
+        content: '👉展开评论';
+        color: var(--content);
+    }
+    .comments_details[open] summary::marker{
+        font-size: 20px;
+        content: '👇关闭评论';
+        color: var(--content);
+    }
+</style>
+
+
+<div>
+    <details class="comments_details">
+        <summary style="cursor: pointer; margin: 50px 0 20px 0;width: 130px;">
+            <span style="font-size: 20px;color: var(--content);">...</span>
+        </summary>
+        <div id="tcomment"></div>
+    </details>
+    <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js">
+    </script>
+    <script>
+        twikoo.init({
+            envId:  null ,
+        el: "#tcomment",
+            lang: 'zh-CN',
+            region:  null ,
+        path: window.TWIKOO_MAGIC_PATH||window.location.pathname,
+        })
+    </script>
+</div>
+</article>
+</main>
+
+<footer class="footer">
+    <span>
+        Copyright
+        &copy;
+        2020-2023
+        <a href="https://eayonlee.com" style="color:#939393;">Eayon&#39;s Blog</a>
+        All Rights Reserved
+    </span>
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color:#939393;">京ICP备2023014718号</a>&nbsp;
+    <span>
+        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=null"
+           style="display:inline-block;text-decoration:none;height:20px;color:#939393;">
+            <img src="https://www.sulvblog.cn/img/beian.png" style="float:left;margin: 0px 5px 0px 0px;"/>
+            京公网安备 11010802042316号
+        </a>
+    </span>
+    <span id="busuanzi_container">
+        <span class="fa fa-user"></span> <span id="busuanzi_value_site_uv"></span>
+        <span class="fa fa-eye"></span> <span id="busuanzi_value_site_pv"></span>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <span class="topInner">
+        <svg class="topSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+            <path d="M12 6H0l6-6z"/>
+        </svg>
+        <span id="read_progress"></span>
+    </span>
+</a>
+
+<script>
+    document.addEventListener('scroll', function (e) {
+        const readProgress = document.getElementById("read_progress");
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        readProgress.innerText = ((scrollTop / (scrollHeight - clientHeight)).toFixed(2) * 100).toFixed(0);
+    })
+</script>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+</script>
+<script>
+    let mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        (function() {
+            document.cookie = "change-themes" + "="+ escape ("false");
+        })()
+
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    });
+</script>
+
+<script>
+    document.body.addEventListener('copy', function (e) {
+        if (window.getSelection().toString() && window.getSelection().toString().length > 50) {
+            let clipboardData = e.clipboardData || window.clipboardData;
+            if (clipboardData) {
+                e.preventDefault();
+                let htmlData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                let textData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                clipboardData.setData('text/html', htmlData);
+                clipboardData.setData('text/plain', textData);
+            }
+        }
+    });
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerText = '复制';
+
+        function copyingDone() {
+            copybutton.innerText = '已复制！';
+            setTimeout(() => {
+                copybutton.innerText = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                let text = codeblock.textContent +
+                    '\r\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                navigator.clipboard.writeText(text);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) {}
+            selection.removeRange(range);
+        });
+
+        let language = codeblock.className.replaceAll("language-", "")
+        let macTool = document.createElement("div")
+        let macTool1 = document.createElement("div")
+        let macTool2 = document.createElement("div")
+        let macTool3 = document.createElement("div")
+        let languageType = document.createElement("div")
+        languageType.innerText = language
+        macTool.setAttribute('class', 'mac-tool')
+        macTool1.setAttribute('class', 'mac bb1')
+        macTool2.setAttribute('class', 'mac bb2')
+        macTool3.setAttribute('class', 'mac bb3')
+        languageType.setAttribute('class', 'language-type')
+        macTool.appendChild(macTool1)
+        macTool.appendChild(macTool2)
+        macTool.appendChild(macTool3)
+        macTool.appendChild(languageType)
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        }
+    });
+</script>
+</body>
+
+</html>

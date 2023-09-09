@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>MobaXterm on Eayon&#39;s Blog</title>
+    <link>https://eayonlee.com/categories/mobaxterm/</link>
+    <description>Recent content in MobaXterm on Eayon&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Sat, 09 Sep 2023 10:11:28 +0800</lastBuildDate><atom:link href="https://eayonlee.com/categories/mobaxterm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MobaXterm服务器连接断开问题</title>
+      <link>https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 09 Sep 2023 10:11:28 +0800</pubDate>
+      
+      <guid>https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80%E9%97%AE%E9%A2%98/</guid>
+      <description>MobaXterm服务器连接断开问题</description>
+    </item>
+    
+    <item>
+      <title>MobaXterm破解</title>
+      <link>https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E7%A0%B4%E8%A7%A3/</link>
+      <pubDate>Sat, 09 Sep 2023 10:11:28 +0800</pubDate>
+      
+      <guid>https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E7%A0%B4%E8%A7%A3/</guid>
+      <description>MobaXterm破解</description>
+    </item>
+    
+  </channel>
+</rss>

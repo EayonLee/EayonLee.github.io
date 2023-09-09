@@ -6,13 +6,49 @@
     <description>Recent content in Categories on Eayon&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh</language>
-    <lastBuildDate>Sat, 09 Sep 2023 09:51:28 +0800</lastBuildDate><atom:link href="https://eayonlee.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 09 Sep 2023 10:25:28 +0800</lastBuildDate><atom:link href="https://eayonlee.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gradle</title>
+      <link>https://eayonlee.com/categories/gradle/</link>
+      <pubDate>Sat, 09 Sep 2023 10:25:28 +0800</pubDate>
+      
+      <guid>https://eayonlee.com/categories/gradle/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Java</title>
+      <link>https://eayonlee.com/categories/java/</link>
+      <pubDate>Sat, 09 Sep 2023 10:25:28 +0800</pubDate>
+      
+      <guid>https://eayonlee.com/categories/java/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Linux</title>
       <link>https://eayonlee.com/categories/linux/</link>
-      <pubDate>Sat, 09 Sep 2023 09:51:28 +0800</pubDate>
+      <pubDate>Sat, 09 Sep 2023 10:11:28 +0800</pubDate>
       
       <guid>https://eayonlee.com/categories/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MobaXterm</title>
+      <link>https://eayonlee.com/categories/mobaxterm/</link>
+      <pubDate>Sat, 09 Sep 2023 10:11:28 +0800</pubDate>
+      
+      <guid>https://eayonlee.com/categories/mobaxterm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>运维</title>
+      <link>https://eayonlee.com/categories/%E8%BF%90%E7%BB%B4/</link>
+      <pubDate>Sat, 09 Sep 2023 10:11:28 +0800</pubDate>
+      
+      <guid>https://eayonlee.com/categories/%E8%BF%90%E7%BB%B4/</guid>
       <description></description>
     </item>
     
@@ -31,15 +67,6 @@
       <pubDate>Sat, 09 Sep 2023 09:51:28 +0800</pubDate>
       
       <guid>https://eayonlee.com/categories/%E5%AD%98%E5%82%A8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>运维</title>
-      <link>https://eayonlee.com/categories/%E8%BF%90%E7%BB%B4/</link>
-      <pubDate>Sat, 09 Sep 2023 09:51:28 +0800</pubDate>
-      
-      <guid>https://eayonlee.com/categories/%E8%BF%90%E7%BB%B4/</guid>
       <description></description>
     </item>
     

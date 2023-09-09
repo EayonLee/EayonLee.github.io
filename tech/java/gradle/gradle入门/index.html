@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Gradle入门 | Eayon&#39;s Blog</title>
+<meta name="keywords" content="Java, Gradle">
+<meta name="description" content="Gradle入门">
+<meta name="author" content="Eayon">
+<link rel="canonical" href="https://eayonlee.com/tech/java/gradle/gradle%E5%85%A5%E9%97%A8/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.css" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.js" onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://eayonlee.com/img/avatar.png">
+<link rel="apple-touch-icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="mask-icon" href="https://eayonlee.com/img/avatar.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js"></script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = ""; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<meta property="og:title" content="Gradle入门" />
+<meta property="og:description" content="Gradle入门" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://eayonlee.com/tech/java/gradle/gradle%E5%85%A5%E9%97%A8/" />
+<meta property="og:image" content="https://eayonlee.com/img/tech/java/gradle/gradle.png" /><meta property="article:section" content="tech" />
+<meta property="article:published_time" content="2023-09-09T10:25:28+08:00" />
+<meta property="article:modified_time" content="2023-09-09T10:25:28+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://eayonlee.com/img/tech/java/gradle/gradle.png" />
+<meta name="twitter:title" content="Gradle入门"/>
+<meta name="twitter:description" content="Gradle入门"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+        {
+          "@type": "ListItem",
+          "position":  2 ,
+          "name": "👨‍💻 Technology",
+          "item": "https://eayonlee.com/tech/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position":  3 ,
+          "name": "Java",
+          "item": "https://eayonlee.com/tech/java/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position":  4 ,
+          "name": "Gradle",
+          "item": "https://eayonlee.com/tech/java/gradle/"
+        }, 
+    {
+      "@type": "ListItem",
+      "position":  5 ,
+      "name": "Gradle入门",
+      "item": "https://eayonlee.com/tech/java/gradle/gradle%E5%85%A5%E9%97%A8/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Gradle入门",
+  "name": "Gradle入门",
+  "description": "Gradle入门",
+  "keywords": [
+    "Java", "Gradle"
+  ],
+  "articleBody": "Gradle官网地址：Gradle Build Tool\nGradle官方下载安装教程页面：https://gradle.org/install/\nGradle官方用户手册：https://docs.gradle.org/current/userguide/userguide.html\n1. Gradle 入门 1.1 简介 Gradle是一款Google推出的，基于JVM，通用灵活的项目构建工具，支持Maven、JCenter多种第三方仓库；支持传递性依赖管理，废弃了繁杂的xml文件，转而使用简洁的、支持多种语言（Java、Groovy）的build脚本文件。\n常见的构建工具\nAnt：2000年Apache推出的存Java编写构建工具，通过xml[build.xml]文件管理项目。\n优点：使用灵活，速度快（快于Gradle和Maven） 缺点：Ant没有强加任何编码约定的项目目录结构，开发人员需要编写繁杂的xml文件构建指令。 Maven：2004年Apache组织推出的再次使用xml文件[pom.xml]管理项目的构建工具\n优点：遵循一套约定大于配置的项目目录结构，使用统一的GAV坐标进行依赖管理，侧重于包管理。 缺点：项目构建过程过于僵硬，配置文件编写不够灵活，不方便自定义组件，构建速度慢于Gradle Gradle：2012年Goole推出的基于Groovy语言的全新项目构建工具，集合了Ant和Maven各自的优势。\n优点：集Ant脚本的灵活性+Maven约定大于配置的项目目录优势，支持多种远程仓库和插件，侧重于大项目构建。\n缺点：学习成本高、资料少、脚本灵活、版本兼容性等。\n1.2 Gradle 安装 1.2.1 安装JDK 不逼逼，是个人都会。当然，要求JDK版本在1.8及其以上\n1.2.2 下载Gradle Gradle | Releases\n1.2.3 配置环境变量 在系统变量中添加如下两个变量\nGRADLE_HOME：就和JDK配置一样 GRADLE_USER_HOME： 相当于配置Gradle 本地仓库位置和 Gradle Wrapper 缓存目录 然后将GRADLE_HOME 环境变量，添加到Path：%GRADLE_HOME%\\bin\n1.2.4 验证 gradle -v或者gradle --version\n1.3 Gradle 目录结构 Gradle项目默认的目录结构，和Maven项目的目录结构一致，都是基于约定大于配置\nTips:\n只有 war 工程才有 webapp 目录，对于普通的 jar 工程并没有 webapp 目录 gradlew 与 gradlew.bat 执行的指定 wrapper 版本中的 gradle 指令，不是本地安装的 gradle 指令 1.4 Gradle 常用命令 命令 作用 gradle clean 清空编译出来的.build目录 gradle classes 编译src\\main\\java目录下的代码和配置文件 gradle test 编译测试代码，生成测试报告 gradle build 构建项目，该指令也相当于执行了gradle classes跟gradle test gradle build -x test 跳过测试构建项目 需要注意的是：gradle 的命令需要在含有build.gradle的目录中执行\n1.5 修改Maven下载源 Gradle 自带的Maven 源地址是国外的，该Maven 源在国内的访问速度是很慢的，除非使用了特别的手段。一般情况下，我们建议使用国内的第三方开放的Maven 源或企业内部自建Maven 源。\n我们需要在gradle的init.d目录下，创建以.gradle结尾的文件，.gradle文件可以实现在 build 开始之前执行。所以我们可以在这个文件中配置预先加载的操作。\n在init.d目录下创建init.gradle文件（不一定非要叫init，只要以.gradle结尾就行）\nallprojects { repositories { mavenLocal() maven { name \"Alibaba\" ; url \"https://maven.aliyun.com/repository/public\" } maven { name \"Bstek\" ; url \"https://nexus.bsdn.org/content/groups/public/\" } mavenCentral() } buildscript { repositories { maven { name \"Alibaba\" ; url 'https://maven.aliyun.com/repository/public' } maven { name \"Bstek\" ; url 'https://nexus.bsdn.org/content/groups/public/' } maven { name \"M2\" ; url 'https://plugins.gradle.org/m2/' } } } } 配置概述\nmavenLocal()：从本地的maven仓库加载依赖，它找maven本地仓库的顺序是先去USER_HOME/.m2/settrings.xml中找本地maven仓库地址，如果没有则去M2_HOME这个环境变量下的conf/settings.xml中找本地maven仓库地址，如果还没有则认为USER_HOME/.m2/repository这个目录是maven的本地仓库。所以我们可以直接在环境变量中配置M2_HOME=D:\\Install\\maven\\apache-maven-3.6.3来指定maven的地址 mavenCentral()：这是代表，如果上面的仓库都无法下载到依赖则从中央仓库下载 但是下载下来的依赖并不是存储在本地maven仓库中，而是放在gradle自己的缓存目录中，默认在USER_HOME/.gradle/caches目录，当然我们之前配置过GRADLE_USER_HOME这个环境变量，所以它就会放在该环境变量下的caches目录中。准确的说gradle并没有本地仓库，他只有caches本地缓存\n2. Wrapper 包装器 Gradle Wrapper 实际上就是对 Gradle 的一层包装，用于解决实际开发中可能会遇到不同项目需要不同版本Gradle的问题。\n例如：我把自己的代码发给别人的时候，会出现如下情况\n对方电脑没有装Gradle 对方电脑Gradle版本太旧无法使用 这时就需要我们使用 Gradle Wrapper ，实际上有了Gradle Wrapper之后，我们本地是可以不安装Gradle的，可以使用Gradle项目自带的Wrapper操作也是可以的。\n而本机电脑安装的Gradle，和项目自带的Gradle Wrapper中Gradle的版本可能不一样，这个很好理解，比如你电脑上装的是8.1.1，别人发给你项目Wrapper中的版本是8.2.1\n查看 Wrapper 的Gradle版本\n我们可以使用gradlew -v或者gradlew.bat -v命令查看Wrapper中的版本\n查看本地Gradle版本\n可以发现版本并不一致，所以当我们想要把项目发给别人或者统一使用的时候，可以将Wrapper中的版本进行修改和开发环境一致\n我们可以通过命令来修改Wrapper的版本号 gradle wrapper --gradle-version=8.1.1\n修改后可以发现Wrapper包中配置文件里的版本就变了\n但此时只是变更了版本信息，并没有真正下载，我们需要通过gradlew -v或gradlew.bat -v命令去查看版本，他会自动下载\n此时我们就可以通过gradlew或者gradlew.bat来执行Gradle相关的指令，操作和Gradle普通指令相同，如下举例：\n3. Gradle 依赖 3.1 快速使用 我们需要在build.gradle文件中导入依赖\nMaven中央仓库地址：https://mvnrepository.com/\n比如我们现在需要导入一个FastJson的依赖\n然后向使用maven一样刷新一下他就会自动下载。\n下载到的gradle地址为：GRADLE_USER_HOME\\caches\\modules-2\\files-2.1\n但按照我们之前 1.5 修改Maven下载源 中的配置，是先去maven仓库中下载，如果maven中已存在的话则不会下载到gradle的这个缓存中\n3.2 Gradle 依赖类型 Gradle提供了三种不同类型的依赖：\nimplementation类型的依赖\nimplementation表示该依赖只在当前 module 中有效，而不会传递给其他依赖它的 module。如果没有指定依赖类型，则默认使用implementation。\n示例代码：\ndependencies { implementation 'com.google.code.gson:gson:2.8.6' } api类型的依赖\napi类型的依赖将会传递给其他依赖它的 module，以便于其他 module 中的代码可以使用这些依赖相关的 API。该类型的依赖在模块或库的 API 保持稳定，适合 ThirdParty 使用的时候建议使用。\ndependencies { api 'com.google.code.gson:gson:2.8.6' } compileOnly类型的依赖\ncompileOnly只在编译阶段有用，而不会在最终的打包结果中出现。这种依赖在你的代码中仅用于编译检查，但不会在运行时加载。可以使用这种依赖类型来解决在模块中引用其他模块造成的多余依赖版本问题。\ndependencies { compileOnly 'junit:junit:4.13.1' } 3.3 依赖的版本规则 Gradle支持使用多种方法指定依赖的版本。下面列举一些实用的版本规则：\n固定版本号\n比如这种写法，完全指定使用的版本号\ndependencies { implementation 'junit:junit:4.13.1' } 动态版本号\n有时，我们可能想要使用最新的库版本。Gradle支持使用通配符 * 来指定最新的版本号。例如：\ndependencies { implementation 'junit:junit:4.13.*' } 区间版本号\n当我们想要使用一系列版本号时，可以使用开区间或闭区间。例如：\ndependencies { implementation 'junit:junit:[4.12, 4.13.1]' } 3.4 排除依赖 如果你添加的一个依赖包含其他不需要的依赖项，Gradle允许你排除这些不需要的依赖项。下面是一个带有不必要依赖项的依赖的示例代码：\ndependencies { implementation 'com.example:foo:1.0.0' { exclude group: 'org.unwanted', module: 'unwanted-module' } } 在这个示例中，Gradle会自动获取组com.example中的foo以及其所有依赖的库，但会排除org.unwanted组中的unwanted-module库。这可以有效避免依赖冲突和不必要的jar重复引用。\n3.5 依赖本地资源 Gradle还支持使用本地文件系统中的库作为依赖项。通过在dependencies声明中添加本地路径，您可以将本地库添加为项目的依赖项。\n例如，下面的依赖项将模块添加为本地依赖项：\ndependencies { implementation files('libs/local-library.jar') } ",
+  "wordCount" : "3515",
+  "inLanguage": "zh",
+  "image":"https://eayonlee.com/img/tech/java/gradle/gradle.png","datePublished": "2023-09-09T10:25:28+08:00",
+  "dateModified": "2023-09-09T10:25:28+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Eayon"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://eayonlee.com/tech/java/gradle/gradle%E5%85%A5%E9%97%A8/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Eayon's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://eayonlee.com/img/avatar.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://eayonlee.com" accesskey="h" title="Eayon (Alt + H)">
+            <img src="https://eayonlee.com/img/avatar.png" alt="logo" aria-label="logo"
+                 height="35">Eayon</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://eayonlee.com/search" title="🔍Search (Alt &#43; /)" accesskey=/>
+                <span>🔍Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/" title="Home">
+                <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tech" title="👨🏻‍💻 Tech">
+                <span>👨🏻‍💻 Tech</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/archives" title="Archives">
+                <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tags" title="Tags">
+                <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/about" title="About">
+                <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/links" title="Links">
+                <span>Links</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main page">
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+</style>
+
+<article class="post-single">
+    <div id="single-content">
+        <header class="post-header">
+            <div class="breadcrumbs"><a href="https://eayonlee.com">🏠 主页</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/">👨‍💻 Technology</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/java/">Java</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/java/gradle/">Gradle</a></div>
+            <h1 class="post-title">
+                Gradle入门
+            </h1>
+            <div class="post-description">
+                Gradle入门
+            </div>
+            <div class="post-meta">
+
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+
+    .parent-post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        opacity: 0.8;
+    }
+</style>
+
+<span class="parent-post-meta">
+    <span id="post_meta_style_1">
+        <span class="fa fa-calendar-check-o"></span>
+        <span>2023-09-09
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    
+    
+    
+    
+    
+    
+    
+    <span id="post_meta_style_3">
+        <span class="fa fa-file-word-o"></span>
+        <span>3515字
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_4">
+        <span class="fa fa-clock-o"></span>
+        <span>8分钟
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_5">
+        <span class="fa fa-user-o"></span>
+        <span>Eayon
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_6">
+        <span class="fa fa-tags" style="opacity: 0.8"></span>
+        <span>
+            <span class="post-tags-meta">
+                <a href="https://eayonlee.com/tags/java/" style="color: var(--secondary)!important;">Java</a>
+                &nbsp;<a href="https://eayonlee.com/tags/gradle/" style="color: var(--secondary)!important;">Gradle</a>
+            </span>
+        </span>
+    </span>
+</span>
+<span style="opacity: 0.8;">
+                    <span id="post_meta_style_7">
+                        &nbsp;&nbsp;
+                        <span class="fa fa-eye" ></span>
+                        <span>
+                            <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+                            &nbsp;&nbsp;
+                        </span>
+                    </span>
+                    <span id="post_meta_style_8">
+                        <span class="fa fa-commenting-o"></span>
+                        <span>
+                            <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js"></script>
+                            <script>
+                                let url = document.documentURI
+                                
+                                let dnsUrl = "https://eayonlee.com"
+                                let urlSplit = url.split(dnsUrl)
+                                let finalUrl = urlSplit[1]
+                                if (finalUrl[0] !== '/') {
+                                    finalUrl = '/'+finalUrl
+                                }
+                                twikoo.getCommentsCount({
+                                    envId:  null , 
+                                region:  null , 
+                                urls: [ 
+                                    
+                                    finalUrl,
+                                ],
+                                    includeReply: false 
+                                }).then(function (res) {
+                                    let count = res[0].count
+                                    const obj = document.getElementById("comment_count");
+                                    obj.innerText = count
+                                    
+                                    
+                                    
+                                }).catch(function (err) {
+                                    
+                                    console.error(err);
+                                });
+                            </script>
+                            <span id="comment_count"></span>
+                        </span>
+                    </span>
+                </span>
+
+</div>
+        </header> 
+<figure class="entry-cover1"><img style="zoom:;" loading="lazy" src="https://eayonlee.com/img/tech/java/gradle/gradle.png" alt="">
+    
+</figure><aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#1-gradle-%e5%85%a5%e9%97%a8" aria-label="1. Gradle 入门">1. Gradle 入门</a><ul>
+                        
+                <li>
+                    <a href="#11-%e7%ae%80%e4%bb%8b" aria-label="1.1 简介">1.1 简介</a></li>
+                <li>
+                    <a href="#12-gradle-%e5%ae%89%e8%a3%85" aria-label="1.2 Gradle 安装">1.2 Gradle 安装</a><ul>
+                        
+                <li>
+                    <a href="#121-%e5%ae%89%e8%a3%85jdk" aria-label="1.2.1 安装JDK">1.2.1 安装JDK</a></li>
+                <li>
+                    <a href="#122-%e4%b8%8b%e8%bd%bdgradle" aria-label="1.2.2 下载Gradle">1.2.2 下载Gradle</a></li>
+                <li>
+                    <a href="#123-%e9%85%8d%e7%bd%ae%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f" aria-label="1.2.3 配置环境变量">1.2.3 配置环境变量</a></li>
+                <li>
+                    <a href="#124-%e9%aa%8c%e8%af%81" aria-label="1.2.4 验证">1.2.4 验证</a></li></ul>
+                </li>
+                <li>
+                    <a href="#13-gradle-%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84" aria-label="1.3 Gradle 目录结构">1.3 Gradle 目录结构</a></li>
+                <li>
+                    <a href="#14-gradle-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4" aria-label="1.4 Gradle 常用命令">1.4 Gradle 常用命令</a></li>
+                <li>
+                    <a href="#15-%e4%bf%ae%e6%94%b9maven%e4%b8%8b%e8%bd%bd%e6%ba%90" aria-label="1.5 修改Maven下载源">1.5 修改Maven下载源</a></li></ul>
+                </li>
+                <li>
+                    <a href="#2-wrapper-%e5%8c%85%e8%a3%85%e5%99%a8" aria-label="2. Wrapper 包装器">2. Wrapper 包装器</a></li>
+                <li>
+                    <a href="#3-gradle-%e4%be%9d%e8%b5%96" aria-label="3. Gradle 依赖">3. Gradle 依赖</a><ul>
+                        
+                <li>
+                    <a href="#31-%e5%bf%ab%e9%80%9f%e4%bd%bf%e7%94%a8" aria-label="3.1 快速使用">3.1 快速使用</a></li>
+                <li>
+                    <a href="#32-gradle-%e4%be%9d%e8%b5%96%e7%b1%bb%e5%9e%8b" aria-label="3.2 Gradle 依赖类型">3.2 Gradle 依赖类型</a></li>
+                <li>
+                    <a href="#33-%e4%be%9d%e8%b5%96%e7%9a%84%e7%89%88%e6%9c%ac%e8%a7%84%e5%88%99" aria-label="3.3 依赖的版本规则">3.3 依赖的版本规则</a></li>
+                <li>
+                    <a href="#34-%e6%8e%92%e9%99%a4%e4%be%9d%e8%b5%96" aria-label="3.4 排除依赖">3.4 排除依赖</a></li>
+                <li>
+                    <a href="#35-%e4%be%9d%e8%b5%96%e6%9c%ac%e5%9c%b0%e8%b5%84%e6%ba%90" aria-label="3.5 依赖本地资源">3.5 依赖本地资源</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+        
+        activeElement = elements[0];
+        const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+        document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+    }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        if (elements) {
+            activeElement = Array.from(elements).find((element) => {
+                if ((getOffsetTop(element) - window.pageYOffset) > 0 &&
+                    (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                    return element;
+                }
+            }) || activeElement
+
+            elements.forEach(element => {
+                const id = encodeURI(element.getAttribute('id')).toLowerCase();
+                if (element === activeElement){
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+                } else {
+                    document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+                }
+            })
+        }
+    }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;
+    }
+</script>
+        <div class="post-content"><p>Gradle官网地址：<a href="https://gradle.org/">Gradle Build Tool</a></p>
+<p>Gradle官方下载安装教程页面：https://gradle.org/install/</p>
+<p>Gradle官方用户手册：https://docs.gradle.org/current/userguide/userguide.html</p>
+<h2 id="1-gradle-入门">1. Gradle 入门<a hidden class="anchor" aria-hidden="true" href="#1-gradle-入门">#</a></h2>
+<h3 id="11-简介">1.1 简介<a hidden class="anchor" aria-hidden="true" href="#11-简介">#</a></h3>
+<p>Gradle是一款Google推出的，基于JVM，通用灵活的项目构建工具，支持Maven、JCenter多种第三方仓库；支持传递性依赖管理，废弃了繁杂的xml文件，转而使用简洁的、支持多种语言（Java、Groovy）的build脚本文件。</p>
+<p><strong>常见的构建工具</strong></p>
+<p><strong>Ant</strong>：2000年Apache推出的存Java编写构建工具，通过xml[build.xml]文件管理项目。</p>
+<ul>
+<li>优点：使用灵活，速度快（快于Gradle和Maven）</li>
+<li>缺点：Ant没有强加任何编码约定的项目目录结构，开发人员需要编写繁杂的xml文件构建指令。</li>
+</ul>
+<p><strong>Maven</strong>：2004年Apache组织推出的再次使用xml文件[pom.xml]管理项目的构建工具</p>
+<ul>
+<li>优点：遵循一套约定大于配置的项目目录结构，使用统一的GAV坐标进行依赖管理，<strong>侧重于包管理</strong>。</li>
+<li>缺点：项目构建过程过于僵硬，配置文件编写不够灵活，不方便自定义组件，构建速度慢于Gradle</li>
+</ul>
+<p><strong>Gradle</strong>：2012年Goole推出的基于Groovy语言的全新项目构建工具，集合了Ant和Maven各自的优势。</p>
+<ul>
+<li>
+<p>优点：集Ant脚本的灵活性+Maven约定大于配置的项目目录优势，支持多种远程仓库和插件，<strong>侧重于大项目构建。</strong></p>
+</li>
+<li>
+<p>缺点：学习成本高、资料少、脚本灵活、版本兼容性等。</p>
+</li>
+</ul>
+<h3 id="12-gradle-安装">1.2 Gradle 安装<a hidden class="anchor" aria-hidden="true" href="#12-gradle-安装">#</a></h3>
+<h4 id="121-安装jdk">1.2.1 安装JDK<a hidden class="anchor" aria-hidden="true" href="#121-安装jdk">#</a></h4>
+<p>不逼逼，是个人都会。当然，要求JDK版本在1.8及其以上</p>
+<h4 id="122-下载gradle">1.2.2 下载Gradle<a hidden class="anchor" aria-hidden="true" href="#122-下载gradle">#</a></h4>
+<p><a href="https://gradle.org/releases/">Gradle | Releases</a></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301730738.png" alt="image-20230830173013697"  />
+</p>
+<h4 id="123-配置环境变量">1.2.3 配置环境变量<a hidden class="anchor" aria-hidden="true" href="#123-配置环境变量">#</a></h4>
+<p>在<strong>系统变量</strong>中添加如下两个变量</p>
+<ul>
+<li><code>GRADLE_HOME</code>：就和JDK配置一样</li>
+<li><code>GRADLE_USER_HOME</code>： 相当于配置Gradle 本地仓库位置和 Gradle Wrapper 缓存目录</li>
+</ul>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301731487.png" alt="image-20230830173138445"  />
+</p>
+<p>然后将<code>GRADLE_HOME</code> 环境变量，添加到<code>Path：%GRADLE_HOME%\bin</code></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301732445.png" alt="image-20230830173202393"  />
+</p>
+<h4 id="124-验证">1.2.4 验证<a hidden class="anchor" aria-hidden="true" href="#124-验证">#</a></h4>
+<p><code>gradle -v</code>或者<code>gradle --version</code></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301732043.png" alt="image-20230830173244992"  />
+</p>
+<h3 id="13-gradle-目录结构">1.3 Gradle 目录结构<a hidden class="anchor" aria-hidden="true" href="#13-gradle-目录结构">#</a></h3>
+<p>Gradle项目默认的目录结构，和Maven项目的目录结构一致，都是基于<strong>约定大于配置</strong></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301741618.png" alt="img"  />
+</p>
+<p><strong>Tips</strong>:</p>
+<ol>
+<li>只有 war 工程才有 webapp 目录，对于普通的 jar 工程并没有 webapp 目录</li>
+<li>gradlew 与 gradlew.bat 执行的指定 wrapper 版本中的 gradle 指令，不是本地安装的 gradle 指令</li>
+</ol>
+<h3 id="14-gradle-常用命令">1.4 Gradle 常用命令<a hidden class="anchor" aria-hidden="true" href="#14-gradle-常用命令">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gradle clean</td>
+<td>清空编译出来的<code>.build</code>目录</td>
+</tr>
+<tr>
+<td>gradle classes</td>
+<td>编译<code>src\main\java</code>目录下的代码和配置文件</td>
+</tr>
+<tr>
+<td>gradle test</td>
+<td>编译测试代码，生成测试报告</td>
+</tr>
+<tr>
+<td>gradle build</td>
+<td>构建项目，该指令也相当于执行了<code>gradle classes</code>跟<code>gradle test</code></td>
+</tr>
+<tr>
+<td>gradle build -x test</td>
+<td>跳过测试构建项目</td>
+</tr>
+</tbody>
+</table>
+<p><strong>需要注意的是</strong>：gradle 的命令需要在含有<code>build.gradle</code>的目录中执行</p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301817030.png" alt="image-20230830181750890"  />
+</p>
+<p><a id="section-1.5"></a></p>
+<h3 id="15-修改maven下载源">1.5 修改Maven下载源<a hidden class="anchor" aria-hidden="true" href="#15-修改maven下载源">#</a></h3>
+<blockquote>
+<p>Gradle 自带的Maven 源地址是国外的，该Maven 源在国内的访问速度是很慢的，除非使用了特别的手段。一般情况下，我们建议使用国内的第三方开放的Maven 源或企业内部自建Maven 源。</p>
+<p>我们需要在gradle的<code>init.d</code>目录下，创建以<code>.gradle</code>结尾的文件，<code>.gradle</code>文件可以实现在 build 开始之前执行。所以我们可以在这个文件中配置预先加载的操作。</p>
+</blockquote>
+<p><strong>在<code>init.d</code>目录下创建<code>init.gradle</code>文件（不一定非要叫init，只要以.gradle结尾就行）</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>allprojects <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    repositories <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        mavenLocal<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>        maven <span style="color:#f92672">{</span> name <span style="color:#e6db74">&#34;Alibaba&#34;</span> <span style="color:#f92672">;</span> url <span style="color:#e6db74">&#34;https://maven.aliyun.com/repository/public&#34;</span> <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>        maven <span style="color:#f92672">{</span> name <span style="color:#e6db74">&#34;Bstek&#34;</span> <span style="color:#f92672">;</span> url <span style="color:#e6db74">&#34;https://nexus.bsdn.org/content/groups/public/&#34;</span> <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>        mavenCentral<span style="color:#f92672">()</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    buildscript <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        repositories <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>            maven <span style="color:#f92672">{</span> name <span style="color:#e6db74">&#34;Alibaba&#34;</span> <span style="color:#f92672">;</span> url <span style="color:#e6db74">&#39;https://maven.aliyun.com/repository/public&#39;</span> <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>            maven <span style="color:#f92672">{</span> name <span style="color:#e6db74">&#34;Bstek&#34;</span> <span style="color:#f92672">;</span> url <span style="color:#e6db74">&#39;https://nexus.bsdn.org/content/groups/public/&#39;</span> <span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>            maven <span style="color:#f92672">{</span> name <span style="color:#e6db74">&#34;M2&#34;</span> <span style="color:#f92672">;</span> url <span style="color:#e6db74">&#39;https://plugins.gradle.org/m2/&#39;</span> <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong>配置概述</strong></p>
+<ul>
+<li><code>mavenLocal()</code>：从本地的maven仓库加载依赖，它找maven本地仓库的顺序是先去<code>USER_HOME/.m2/settrings.xml</code>中找本地maven仓库地址，如果没有则去<code>M2_HOME</code>这个环境变量下的<code>conf/settings.xml</code>中找本地maven仓库地址，如果还没有则认为<code>USER_HOME/.m2/repository</code>这个目录是maven的本地仓库。所以我们可以直接在环境变量中配置<code>M2_HOME=D:\Install\maven\apache-maven-3.6.3</code>来指定maven的地址</li>
+<li><code>mavenCentral()</code>：这是代表，如果上面的仓库都无法下载到依赖则从中央仓库下载</li>
+</ul>
+<p>但是下载下来的依赖并不是存储在本地maven仓库中，而是放在gradle自己的缓存目录中，默认在<code>USER_HOME/.gradle/caches</code>目录，当然我们之前配置过<code>GRADLE_USER_HOME</code>这个环境变量，所以它就会放在该环境变量下的<code>caches</code>目录中。准确的说gradle并没有本地仓库，他只有<code>caches</code>本地缓存</p>
+<h2 id="2-wrapper-包装器">2. Wrapper 包装器<a hidden class="anchor" aria-hidden="true" href="#2-wrapper-包装器">#</a></h2>
+<p>Gradle Wrapper 实际上就是对 Gradle 的一层包装，用于解决实际开发中可能会遇到不同项目需要不同版本Gradle的问题。</p>
+<p><strong>例如：我把自己的代码发给别人的时候，会出现如下情况</strong></p>
+<ul>
+<li>对方电脑没有装Gradle</li>
+<li>对方电脑Gradle版本太旧无法使用</li>
+</ul>
+<p>这时就需要我们使用 Gradle Wrapper ，实际上有了Gradle Wrapper之后，我们本地是可以不安装Gradle的，可以使用Gradle项目自带的Wrapper操作也是可以的。</p>
+<p>而本机电脑安装的Gradle，和项目自带的Gradle Wrapper中Gradle的版本可能不一样，这个很好理解，比如你电脑上装的是<code>8.1.1</code>，别人发给你项目Wrapper中的版本是<code>8.2.1</code></p>
+<p><strong>查看 Wrapper 的Gradle版本</strong></p>
+<p>我们可以使用<code>gradlew -v</code>或者<code>gradlew.bat -v</code>命令查看Wrapper中的版本</p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301916591.png" alt="image-20230830191622507"  />
+</p>
+<p><strong>查看本地Gradle版本</strong></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301916185.png" alt="image-20230830191633120"  />
+</p>
+<p>可以发现版本并不一致，所以当我们想要把项目发给别人或者统一使用的时候，可以将Wrapper中的版本进行修改和开发环境一致</p>
+<p><strong>我们可以通过命令来修改Wrapper的版本号</strong> <code>gradle wrapper --gradle-version=8.1.1</code></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308301918905.png" alt="image-20230830191816834"  />
+</p>
+<p>修改后可以发现Wrapper包中配置文件里的版本就变了</p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308310903626.png" alt="image-20230831090357454"  />
+</p>
+<p>但此时只是变更了版本信息，并没有真正下载，我们需要通过<code>gradlew -v</code>或<code>gradlew.bat -v</code>命令去查看版本，他会自动下载</p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308310905495.png" alt="image-20230831090509417"  />
+</p>
+<p>此时我们就可以通过<code>gradlew</code>或者<code>gradlew.bat</code>来执行Gradle相关的指令，操作和Gradle普通指令相同，如下举例：</p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308310906640.png" alt="image-20230831090629556"  />
+</p>
+<h2 id="3-gradle-依赖">3. Gradle 依赖<a hidden class="anchor" aria-hidden="true" href="#3-gradle-依赖">#</a></h2>
+<h3 id="31-快速使用">3.1 快速使用<a hidden class="anchor" aria-hidden="true" href="#31-快速使用">#</a></h3>
+<p>我们需要在<code>build.gradle</code>文件中导入依赖</p>
+<p>Maven中央仓库地址：<a href="https://mvnrepository.com/">https://mvnrepository.com/</a></p>
+<p>比如我们现在需要导入一个FastJson的依赖</p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308310909927.png" alt="image-20230831090912792"  />
+</p>
+<p>然后向使用maven一样刷新一下他就会自动下载。</p>
+<p>下载到的gradle地址为：<code>GRADLE_USER_HOME\caches\modules-2\files-2.1</code></p>
+<p><img loading="lazy" src="/img/tech/java/gradle/202308310910736.png" alt="image-20230831091027635"  />
+</p>
+<p>但按照我们之前 <a href="#section-1.5">1.5 修改Maven下载源</a> 中的配置，是先去maven仓库中下载，如果maven中已存在的话则不会下载到gradle的这个缓存中</p>
+<h3 id="32-gradle-依赖类型">3.2 Gradle 依赖类型<a hidden class="anchor" aria-hidden="true" href="#32-gradle-依赖类型">#</a></h3>
+<p>Gradle提供了三种不同类型的依赖：</p>
+<p><strong>implementation类型的依赖</strong></p>
+<p><code>implementation</code>表示该依赖只在当前 <code>module</code> 中有效，而不会传递给其他依赖它的 <code>module</code>。如果没有指定依赖类型，则默认使用<code>implementation</code>。</p>
+<p>示例代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    implementation <span style="color:#e6db74">&#39;com.google.code.gson:gson:2.8.6&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong>api类型的依赖</strong></p>
+<p><code>api</code>类型的依赖将会传递给其他依赖它的 <code>module</code>，以便于其他 <code>module</code> 中的代码可以使用这些依赖相关的 API。该类型的依赖在模块或库的 API 保持稳定，适合 ThirdParty 使用的时候建议使用。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    api <span style="color:#e6db74">&#39;com.google.code.gson:gson:2.8.6&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong>compileOnly类型的依赖</strong></p>
+<p><code>compileOnly</code>只在编译阶段有用，而不会在最终的打包结果中出现。这种依赖在你的代码中仅用于编译检查，但不会在运行时加载。可以使用这种依赖类型来解决在模块中引用其他模块造成的多余依赖版本问题。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    compileOnly <span style="color:#e6db74">&#39;junit:junit:4.13.1&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="33-依赖的版本规则">3.3 依赖的版本规则<a hidden class="anchor" aria-hidden="true" href="#33-依赖的版本规则">#</a></h3>
+<p>Gradle支持使用多种方法指定依赖的版本。下面列举一些实用的版本规则：</p>
+<p><strong>固定版本号</strong></p>
+<p>比如这种写法，完全指定使用的版本号</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    implementation <span style="color:#e6db74">&#39;junit:junit:4.13.1&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong>动态版本号</strong></p>
+<p>有时，我们可能想要使用最新的库版本。Gradle支持使用通配符 <code>*</code> 来指定最新的版本号。例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    implementation <span style="color:#e6db74">&#39;junit:junit:4.13.*&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p><strong>区间版本号</strong></p>
+<p>当我们想要使用一系列版本号时，可以使用开区间或闭区间。例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    implementation <span style="color:#e6db74">&#39;junit:junit:[4.12, 4.13.1]&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h3 id="34-排除依赖">3.4 排除依赖<a hidden class="anchor" aria-hidden="true" href="#34-排除依赖">#</a></h3>
+<p>如果你添加的一个依赖包含其他不需要的依赖项，Gradle允许你排除这些不需要的依赖项。下面是一个带有不必要依赖项的依赖的示例代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    implementation <span style="color:#e6db74">&#39;com.example:foo:1.0.0&#39;</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    	exclude group: <span style="color:#e6db74">&#39;org.unwanted&#39;</span><span style="color:#f92672">,</span> module: <span style="color:#e6db74">&#39;unwanted-module&#39;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>在这个示例中，Gradle会自动获取组<code>com.example</code>中的<code>foo</code>以及其所有依赖的库，但会排除<code>org.unwanted</code>组中的<code>unwanted-module</code>库。这可以有效避免依赖冲突和不必要的jar重复引用。</p>
+<h3 id="35-依赖本地资源">3.5 依赖本地资源<a hidden class="anchor" aria-hidden="true" href="#35-依赖本地资源">#</a></h3>
+<p>Gradle还支持使用本地文件系统中的库作为依赖项。通过在<code>dependencies</code>声明中添加本地路径，您可以将本地库添加为项目的依赖项。</p>
+<p>例如，下面的依赖项将模块添加为本地依赖项：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gradle" data-lang="gradle"><span style="display:flex;"><span>dependencies <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    implementation <span style="color:#a6e22e">files</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#39;libs/local-library.jar&#39;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
+
+        </div>
+        <div class="post-reward">
+            <div style="padding: 0 0 0 0; margin: 0 0 0 0; width: 100%; font-size:16px; text-align: center;">
+                <div id="QR" style="opacity: 0;">
+                    <div id="wechat" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="wechat_qr" src="https://eayonlee.com/img/wechat_pay.png" alt="wechat_pay"></a>
+                        <p>微信</p>
+                    </div>
+                    <div id="alipay" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="alipay_qr" src="https://eayonlee.com/img/alipay.png" alt="alipay"></a>
+                        <p>支付宝</p>
+                    </div>
+                </div>
+                <button id="rewardButton"
+                        onclick="
+                    var qr = document.getElementById('QR');
+                    if (qr.style.opacity === '0') {
+                        qr.style.opacity='1';
+                    } else {
+                        qr.style.opacity='0'
+                    }"
+                >
+                    <span>☕️ By me a coffee</span>
+                </button>
+            </div>
+        </div>
+
+        <footer class="post-footer">
+            
+<nav class="paginav">
+  <a class="next" href="https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80%E9%97%AE%E9%A2%98/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>MobaXterm服务器连接断开问题</span>
+  </a>
+</nav>
+
+        </footer>
+    </div>
+
+<style>
+    .comments_details summary::marker {
+        font-size: 20px;
+        content: '👉展开评论';
+        color: var(--content);
+    }
+    .comments_details[open] summary::marker{
+        font-size: 20px;
+        content: '👇关闭评论';
+        color: var(--content);
+    }
+</style>
+
+
+<div>
+    <details class="comments_details">
+        <summary style="cursor: pointer; margin: 50px 0 20px 0;width: 130px;">
+            <span style="font-size: 20px;color: var(--content);">...</span>
+        </summary>
+        <div id="tcomment"></div>
+    </details>
+    <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js">
+    </script>
+    <script>
+        twikoo.init({
+            envId:  null ,
+        el: "#tcomment",
+            lang: 'zh-CN',
+            region:  null ,
+        path: window.TWIKOO_MAGIC_PATH||window.location.pathname,
+        })
+    </script>
+</div>
+</article>
+</main>
+
+<footer class="footer">
+    <span>
+        Copyright
+        &copy;
+        2020-2023
+        <a href="https://eayonlee.com" style="color:#939393;">Eayon&#39;s Blog</a>
+        All Rights Reserved
+    </span>
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color:#939393;">京ICP备2023014718号</a>&nbsp;
+    <span>
+        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=null"
+           style="display:inline-block;text-decoration:none;height:20px;color:#939393;">
+            <img src="https://www.sulvblog.cn/img/beian.png" style="float:left;margin: 0px 5px 0px 0px;"/>
+            京公网安备 11010802042316号
+        </a>
+    </span>
+    <span id="busuanzi_container">
+        <span class="fa fa-user"></span> <span id="busuanzi_value_site_uv"></span>
+        <span class="fa fa-eye"></span> <span id="busuanzi_value_site_pv"></span>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <span class="topInner">
+        <svg class="topSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+            <path d="M12 6H0l6-6z"/>
+        </svg>
+        <span id="read_progress"></span>
+    </span>
+</a>
+
+<script>
+    document.addEventListener('scroll', function (e) {
+        const readProgress = document.getElementById("read_progress");
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        readProgress.innerText = ((scrollTop / (scrollHeight - clientHeight)).toFixed(2) * 100).toFixed(0);
+    })
+</script>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+</script>
+<script>
+    let mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        (function() {
+            document.cookie = "change-themes" + "="+ escape ("false");
+        })()
+
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    });
+</script>
+
+<script>
+    document.body.addEventListener('copy', function (e) {
+        if (window.getSelection().toString() && window.getSelection().toString().length > 50) {
+            let clipboardData = e.clipboardData || window.clipboardData;
+            if (clipboardData) {
+                e.preventDefault();
+                let htmlData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                let textData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                clipboardData.setData('text/html', htmlData);
+                clipboardData.setData('text/plain', textData);
+            }
+        }
+    });
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerText = '复制';
+
+        function copyingDone() {
+            copybutton.innerText = '已复制！';
+            setTimeout(() => {
+                copybutton.innerText = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                let text = codeblock.textContent +
+                    '\r\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                navigator.clipboard.writeText(text);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) {}
+            selection.removeRange(range);
+        });
+
+        let language = codeblock.className.replaceAll("language-", "")
+        let macTool = document.createElement("div")
+        let macTool1 = document.createElement("div")
+        let macTool2 = document.createElement("div")
+        let macTool3 = document.createElement("div")
+        let languageType = document.createElement("div")
+        languageType.innerText = language
+        macTool.setAttribute('class', 'mac-tool')
+        macTool1.setAttribute('class', 'mac bb1')
+        macTool2.setAttribute('class', 'mac bb2')
+        macTool3.setAttribute('class', 'mac bb3')
+        languageType.setAttribute('class', 'language-type')
+        macTool.appendChild(macTool1)
+        macTool.appendChild(macTool2)
+        macTool.appendChild(macTool3)
+        macTool.appendChild(languageType)
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>MobaXterm破解 | Eayon&#39;s Blog</title>
+<meta name="keywords" content="运维, Linux, MobaXterm">
+<meta name="description" content="MobaXterm破解">
+<meta name="author" content="Eayon">
+<link rel="canonical" href="https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E7%A0%B4%E8%A7%A3/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.css" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.js" onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://eayonlee.com/img/avatar.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://eayonlee.com/img/avatar.png">
+<link rel="apple-touch-icon" href="https://eayonlee.com/img/avatar.png">
+<link rel="mask-icon" href="https://eayonlee.com/img/avatar.png">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+</noscript>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+<script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.min.js"></script>
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = ""; 
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+<meta property="og:title" content="MobaXterm破解" />
+<meta property="og:description" content="MobaXterm破解" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E7%A0%B4%E8%A7%A3/" />
+<meta property="og:image" content="https://eayonlee.com/img/tech/linux/mobaXterm/mobaxterm.png" /><meta property="article:section" content="tech" />
+<meta property="article:published_time" content="2023-09-09T10:11:28+08:00" />
+<meta property="article:modified_time" content="2023-09-09T10:11:28+08:00" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://eayonlee.com/img/tech/linux/mobaXterm/mobaxterm.png" />
+<meta name="twitter:title" content="MobaXterm破解"/>
+<meta name="twitter:description" content="MobaXterm破解"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+
+        {
+          "@type": "ListItem",
+          "position":  2 ,
+          "name": "👨‍💻 Technology",
+          "item": "https://eayonlee.com/tech/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position":  3 ,
+          "name": "Linux",
+          "item": "https://eayonlee.com/tech/linux/"
+        },
+
+        {
+          "@type": "ListItem",
+          "position":  4 ,
+          "name": "MobaXterm",
+          "item": "https://eayonlee.com/tech/linux/mobaxterm/"
+        }, 
+    {
+      "@type": "ListItem",
+      "position":  5 ,
+      "name": "MobaXterm破解",
+      "item": "https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E7%A0%B4%E8%A7%A3/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MobaXterm破解",
+  "name": "MobaXterm破解",
+  "description": "MobaXterm破解",
+  "keywords": [
+    "运维", "Linux", "MobaXterm"
+  ],
+  "articleBody": "主要流程就是通过一个Python脚本生成Custom.mxtpro文件，然后放到 MobaXterm 安装目录下接着重启即可\nPython脚本：MobaXterm-Keygen.py\n#/usr/bin/env python3 ''' Author: Eayon License: GPLv3 ''' import os, sys, zipfile VariantBase64Table = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=' VariantBase64Dict = { i : VariantBase64Table[i] for i in range(len(VariantBase64Table)) } VariantBase64ReverseDict = { VariantBase64Table[i] : i for i in range(len(VariantBase64Table)) } def VariantBase64Encode(bs : bytes): result = b'' blocks_count, left_bytes = divmod(len(bs), 3) for i in range(blocks_count): coding_int = int.from_bytes(bs[3 * i:3 * i + 3], 'little') block = VariantBase64Dict[coding_int \u0026 0x3f] block += VariantBase64Dict[(coding_int \u003e\u003e 6) \u0026 0x3f] block += VariantBase64Dict[(coding_int \u003e\u003e 12) \u0026 0x3f] block += VariantBase64Dict[(coding_int \u003e\u003e 18) \u0026 0x3f] result += block.encode() if left_bytes == 0: return result elif left_bytes == 1: coding_int = int.from_bytes(bs[3 * blocks_count:], 'little') block = VariantBase64Dict[coding_int \u0026 0x3f] block += VariantBase64Dict[(coding_int \u003e\u003e 6) \u0026 0x3f] result += block.encode() return result else: coding_int = int.from_bytes(bs[3 * blocks_count:], 'little') block = VariantBase64Dict[coding_int \u0026 0x3f] block += VariantBase64Dict[(coding_int \u003e\u003e 6) \u0026 0x3f] block += VariantBase64Dict[(coding_int \u003e\u003e 12) \u0026 0x3f] result += block.encode() return result def VariantBase64Decode(s : str): result = b'' blocks_count, left_bytes = divmod(len(s), 4) for i in range(blocks_count): block = VariantBase64ReverseDict[s[4 * i]] block += VariantBase64ReverseDict[s[4 * i + 1]] \u003c\u003c 6 block += VariantBase64ReverseDict[s[4 * i + 2]] \u003c\u003c 12 block += VariantBase64ReverseDict[s[4 * i + 3]] \u003c\u003c 18 result += block.to_bytes(3, 'little') if left_bytes == 0: return result elif left_bytes == 2: block = VariantBase64ReverseDict[s[4 * blocks_count]] block += VariantBase64ReverseDict[s[4 * blocks_count + 1]] \u003c\u003c 6 result += block.to_bytes(1, 'little') return result elif left_bytes == 3: block = VariantBase64ReverseDict[s[4 * blocks_count]] block += VariantBase64ReverseDict[s[4 * blocks_count + 1]] \u003c\u003c 6 block += VariantBase64ReverseDict[s[4 * blocks_count + 2]] \u003c\u003c 12 result += block.to_bytes(2, 'little') return result else: raise ValueError('Invalid encoding.') def EncryptBytes(key : int, bs : bytes): result = bytearray() for i in range(len(bs)): result.append(bs[i] ^ ((key \u003e\u003e 8) \u0026 0xff)) key = result[-1] \u0026 key | 0x482D return bytes(result) def DecryptBytes(key : int, bs : bytes): result = bytearray() for i in range(len(bs)): result.append(bs[i] ^ ((key \u003e\u003e 8) \u0026 0xff)) key = bs[i] \u0026 key | 0x482D return bytes(result) class LicenseType: Professional = 1 Educational = 3 Persional = 4 def GenerateLicense(Type : LicenseType, Count : int, UserName : str, MajorVersion : int, MinorVersion): assert(Count \u003e= 0) LicenseString = '%d#%s|%d%d#%d#%d3%d6%d#%d#%d#%d#' % (Type, UserName, MajorVersion, MinorVersion, Count, MajorVersion, MinorVersion, MinorVersion, 0, # Unknown 0, # No Games flag. 0 means \"NoGames = false\". But it does not work. 0) # No Plugins flag. 0 means \"NoPlugins = false\". But it does not work. EncodedLicenseString = VariantBase64Encode(EncryptBytes(0x787, LicenseString.encode())).decode() with zipfile.ZipFile('Custom.mxtpro', 'w') as f: f.writestr('Pro.key', data = EncodedLicenseString) def help(): print('Usage:') print(' MobaXterm-Keygen.py ') print() print(' : The Name licensed to') print(' : The Version of MobaXterm') print(' Example: 23.0') print() if __name__ == '__main__': if len(sys.argv) != 3: help() exit(0) else: MajorVersion, MinorVersion = sys.argv[2].split('.')[0:2] MajorVersion = int(MajorVersion) MinorVersion = int(MinorVersion) GenerateLicense(LicenseType.Professional, 1, sys.argv[1], MajorVersion, MinorVersion) print('[*] Success!') print('[*] File generated: %s' % os.path.join(os.getcwd(), 'Custom.mxtpro')) print('[*] Please move or copy the newly-generated file to MobaXterm\\'s installation path.') print() else: print('[*] ERROR: Please run this script directly') 执行该脚本\n# 执行格式 python MobaXterm-Keygen.py # 比如我的用户名是 EayonLee，版本是23.0，则完整命令如下 python MobaXterm-Keygen.py \"EayonLee\" 23.0 # 如果不知道你的版本是多少可进入MObaXterm后在顶部导航找到Help并点击就能看到版本 执行完脚本后会生成一个Custom.mxtpro文件，然后放到 MobaXterm 安装目录下接着重启即可\n",
+  "wordCount" : "725",
+  "inLanguage": "zh",
+  "image":"https://eayonlee.com/img/tech/linux/mobaXterm/mobaxterm.png","datePublished": "2023-09-09T10:11:28+08:00",
+  "dateModified": "2023-09-09T10:11:28+08:00",
+  "author":[{
+    "@type": "Person",
+    "name": "Eayon"
+  }],
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E7%A0%B4%E8%A7%A3/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Eayon's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://eayonlee.com/img/avatar.png"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://eayonlee.com" accesskey="h" title="Eayon (Alt + H)">
+            <img src="https://eayonlee.com/img/avatar.png" alt="logo" aria-label="logo"
+                 height="35">Eayon</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://eayonlee.com/search" title="🔍Search (Alt &#43; /)" accesskey=/>
+                <span>🔍Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/" title="Home">
+                <span>Home</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tech" title="👨🏻‍💻 Tech">
+                <span>👨🏻‍💻 Tech</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/archives" title="Archives">
+                <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/tags" title="Tags">
+                <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/about" title="About">
+                <span>About</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://eayonlee.com/links" title="Links">
+                <span>Links</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main page">
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+</style>
+
+<article class="post-single">
+    <div id="single-content">
+        <header class="post-header">
+            <div class="breadcrumbs"><a href="https://eayonlee.com">🏠 主页</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/">👨‍💻 Technology</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/linux/">Linux</a>&nbsp;»&nbsp;<a href="https://eayonlee.com/tech/linux/mobaxterm/">MobaXterm</a></div>
+            <h1 class="post-title">
+                MobaXterm破解
+            </h1>
+            <div class="post-description">
+                MobaXterm破解
+            </div>
+            <div class="post-meta">
+
+<style>
+    i[id*="post_meta_style"] {
+        display: flex;
+        align-items: center;
+        margin: 0 0 10px 0;
+    }
+
+    .parent-post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        opacity: 0.8;
+    }
+</style>
+
+<span class="parent-post-meta">
+    <span id="post_meta_style_1">
+        <span class="fa fa-calendar-check-o"></span>
+        <span>2023-09-09
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    
+    
+    
+    
+    
+    
+    
+    <span id="post_meta_style_3">
+        <span class="fa fa-file-word-o"></span>
+        <span>725字
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_4">
+        <span class="fa fa-clock-o"></span>
+        <span>2分钟
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_5">
+        <span class="fa fa-user-o"></span>
+        <span>Eayon
+            &nbsp;&nbsp;
+        </span>
+    </span>
+    <span id="post_meta_style_6">
+        <span class="fa fa-tags" style="opacity: 0.8"></span>
+        <span>
+            <span class="post-tags-meta">
+                <a href="https://eayonlee.com/tags/%E8%BF%90%E7%BB%B4/" style="color: var(--secondary)!important;">运维</a>
+                &nbsp;<a href="https://eayonlee.com/tags/linux/" style="color: var(--secondary)!important;">Linux</a>
+                &nbsp;<a href="https://eayonlee.com/tags/mobaxterm/" style="color: var(--secondary)!important;">MobaXterm</a>
+            </span>
+        </span>
+    </span>
+</span>
+<span style="opacity: 0.8;">
+                    <span id="post_meta_style_7">
+                        &nbsp;&nbsp;
+                        <span class="fa fa-eye" ></span>
+                        <span>
+                            <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span></span>
+                            &nbsp;&nbsp;
+                        </span>
+                    </span>
+                    <span id="post_meta_style_8">
+                        <span class="fa fa-commenting-o"></span>
+                        <span>
+                            <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js"></script>
+                            <script>
+                                let url = document.documentURI
+                                
+                                let dnsUrl = "https://eayonlee.com"
+                                let urlSplit = url.split(dnsUrl)
+                                let finalUrl = urlSplit[1]
+                                if (finalUrl[0] !== '/') {
+                                    finalUrl = '/'+finalUrl
+                                }
+                                twikoo.getCommentsCount({
+                                    envId:  null , 
+                                region:  null , 
+                                urls: [ 
+                                    
+                                    finalUrl,
+                                ],
+                                    includeReply: false 
+                                }).then(function (res) {
+                                    let count = res[0].count
+                                    const obj = document.getElementById("comment_count");
+                                    obj.innerText = count
+                                    
+                                    
+                                    
+                                }).catch(function (err) {
+                                    
+                                    console.error(err);
+                                });
+                            </script>
+                            <span id="comment_count"></span>
+                        </span>
+                    </span>
+                </span>
+
+</div>
+        </header> 
+<figure class="entry-cover1"><img style="zoom:;" loading="lazy" src="https://eayonlee.com/img/tech/linux/mobaXterm/mobaxterm.png" alt="">
+    
+</figure>
+        <div class="post-content"><p>主要流程就是通过一个Python脚本生成<code>Custom.mxtpro</code>文件，然后放到 MobaXterm 安装目录下接着重启即可</p>
+<p><strong>Python脚本：MobaXterm-Keygen.py</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#/usr/bin/env python3</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Author: Eayon
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">License: GPLv3
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os<span style="color:#f92672">,</span> sys<span style="color:#f92672">,</span> zipfile
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>VariantBase64Table <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=&#39;</span>
+</span></span><span style="display:flex;"><span>VariantBase64Dict <span style="color:#f92672">=</span> { i : VariantBase64Table[i] <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(VariantBase64Table)) }
+</span></span><span style="display:flex;"><span>VariantBase64ReverseDict <span style="color:#f92672">=</span> { VariantBase64Table[i] : i <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(VariantBase64Table)) }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">VariantBase64Encode</span>(bs : bytes):
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    blocks_count, left_bytes <span style="color:#f92672">=</span> divmod(len(bs), <span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(blocks_count):
+</span></span><span style="display:flex;"><span>        coding_int <span style="color:#f92672">=</span> int<span style="color:#f92672">.</span>from_bytes(bs[<span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> i:<span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>], <span style="color:#e6db74">&#39;little&#39;</span>)
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> VariantBase64Dict[coding_int <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64Dict[(coding_int <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">6</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64Dict[(coding_int <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">12</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64Dict[(coding_int <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">18</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> block<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> left_bytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> left_bytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>        coding_int <span style="color:#f92672">=</span> int<span style="color:#f92672">.</span>from_bytes(bs[<span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> blocks_count:], <span style="color:#e6db74">&#39;little&#39;</span>)
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> VariantBase64Dict[coding_int <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64Dict[(coding_int <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">6</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> block<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        coding_int <span style="color:#f92672">=</span> int<span style="color:#f92672">.</span>from_bytes(bs[<span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> blocks_count:], <span style="color:#e6db74">&#39;little&#39;</span>)
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> VariantBase64Dict[coding_int <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64Dict[(coding_int <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">6</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64Dict[(coding_int <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">12</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3f</span>]
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> block<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">VariantBase64Decode</span>(s : str):
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    blocks_count, left_bytes <span style="color:#f92672">=</span> divmod(len(s), <span style="color:#ae81ff">4</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(blocks_count):
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> i]]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">12</span>
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>]] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">18</span>
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> block<span style="color:#f92672">.</span>to_bytes(<span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#39;little&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> left_bytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> left_bytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> blocks_count]]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> blocks_count <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> block<span style="color:#f92672">.</span>to_bytes(<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;little&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">elif</span> left_bytes <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> blocks_count]]
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> blocks_count <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">+=</span> VariantBase64ReverseDict[s[<span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> blocks_count <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]] <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">12</span>
+</span></span><span style="display:flex;"><span>        result <span style="color:#f92672">+=</span> block<span style="color:#f92672">.</span>to_bytes(<span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#39;little&#39;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(<span style="color:#e6db74">&#39;Invalid encoding.&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">EncryptBytes</span>(key : int, bs : bytes):
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> bytearray()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(bs)):
+</span></span><span style="display:flex;"><span>        result<span style="color:#f92672">.</span>append(bs[i] <span style="color:#f92672">^</span> ((key <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">8</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff</span>))
+</span></span><span style="display:flex;"><span>        key <span style="color:#f92672">=</span> result[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">&amp;</span> key <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x482D</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> bytes(result)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">DecryptBytes</span>(key : int, bs : bytes):
+</span></span><span style="display:flex;"><span>    result <span style="color:#f92672">=</span> bytearray()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(len(bs)):
+</span></span><span style="display:flex;"><span>        result<span style="color:#f92672">.</span>append(bs[i] <span style="color:#f92672">^</span> ((key <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">8</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xff</span>))
+</span></span><span style="display:flex;"><span>        key <span style="color:#f92672">=</span> bs[i] <span style="color:#f92672">&amp;</span> key <span style="color:#f92672">|</span> <span style="color:#ae81ff">0x482D</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> bytes(result)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LicenseType</span>:
+</span></span><span style="display:flex;"><span>    Professional <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    Educational <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>    Persional <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">GenerateLicense</span>(Type : LicenseType, Count : int, UserName : str, MajorVersion : int, MinorVersion):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">assert</span>(Count <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    LicenseString <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">#</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">|</span><span style="color:#e6db74">%d%d</span><span style="color:#e6db74">#</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">#</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">3</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">6</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">#</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">#</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">#</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">#&#39;</span> <span style="color:#f92672">%</span> (Type, 
+</span></span><span style="display:flex;"><span>                                                          UserName, MajorVersion, MinorVersion, 
+</span></span><span style="display:flex;"><span>                                                          Count, 
+</span></span><span style="display:flex;"><span>                                                          MajorVersion, MinorVersion, MinorVersion,
+</span></span><span style="display:flex;"><span>                                                          <span style="color:#ae81ff">0</span>,    <span style="color:#75715e"># Unknown</span>
+</span></span><span style="display:flex;"><span>                                                          <span style="color:#ae81ff">0</span>,    <span style="color:#75715e"># No Games flag. 0 means &#34;NoGames = false&#34;. But it does not work.</span>
+</span></span><span style="display:flex;"><span>                                                          <span style="color:#ae81ff">0</span>)    <span style="color:#75715e"># No Plugins flag. 0 means &#34;NoPlugins = false&#34;. But it does not work.</span>
+</span></span><span style="display:flex;"><span>    EncodedLicenseString <span style="color:#f92672">=</span> VariantBase64Encode(EncryptBytes(<span style="color:#ae81ff">0x787</span>, LicenseString<span style="color:#f92672">.</span>encode()))<span style="color:#f92672">.</span>decode()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> zipfile<span style="color:#f92672">.</span>ZipFile(<span style="color:#e6db74">&#39;Custom.mxtpro&#39;</span>, <span style="color:#e6db74">&#39;w&#39;</span>) <span style="color:#66d9ef">as</span> f:
+</span></span><span style="display:flex;"><span>        f<span style="color:#f92672">.</span>writestr(<span style="color:#e6db74">&#39;Pro.key&#39;</span>, data <span style="color:#f92672">=</span> EncodedLicenseString)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">help</span>():
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;Usage:&#39;</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;    MobaXterm-Keygen.py &lt;UserName&gt; &lt;Version&gt;&#39;</span>)
+</span></span><span style="display:flex;"><span>    print()
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;    &lt;UserName&gt;:      The Name licensed to&#39;</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;    &lt;Version&gt;:       The Version of MobaXterm&#39;</span>)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;                     Example:    23.0&#39;</span>)
+</span></span><span style="display:flex;"><span>    print()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>        help()
+</span></span><span style="display:flex;"><span>        exit(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        MajorVersion, MinorVersion <span style="color:#f92672">=</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#39;.&#39;</span>)[<span style="color:#ae81ff">0</span>:<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>        MajorVersion <span style="color:#f92672">=</span> int(MajorVersion)
+</span></span><span style="display:flex;"><span>        MinorVersion <span style="color:#f92672">=</span> int(MinorVersion)
+</span></span><span style="display:flex;"><span>        GenerateLicense(LicenseType<span style="color:#f92672">.</span>Professional, 
+</span></span><span style="display:flex;"><span>                        <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>                        sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>], 
+</span></span><span style="display:flex;"><span>                        MajorVersion, 
+</span></span><span style="display:flex;"><span>                        MinorVersion)
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;[*] Success!&#39;</span>)
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;[*] File generated: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> os<span style="color:#f92672">.</span>path<span style="color:#f92672">.</span>join(os<span style="color:#f92672">.</span>getcwd(), <span style="color:#e6db74">&#39;Custom.mxtpro&#39;</span>))
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#39;[*] Please move or copy the newly-generated file to MobaXterm</span><span style="color:#ae81ff">\&#39;</span><span style="color:#e6db74">s installation path.&#39;</span>)
+</span></span><span style="display:flex;"><span>        print()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#39;[*] ERROR: Please run this script directly&#39;</span>)
+</span></span></code></pre></div><p><strong>执行该脚本</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span><span style="color:#75715e"># 执行格式</span>
+</span></span><span style="display:flex;"><span>python MobaXterm-Keygen.py &lt;your user name&gt; &lt;your MobaXterm version&gt;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 比如我的用户名是 EayonLee，版本是23.0，则完整命令如下</span>
+</span></span><span style="display:flex;"><span>python MobaXterm-Keygen.py <span style="color:#e6db74">&#34;EayonLee&#34;</span> 23.0
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 如果不知道你的版本是多少可进入MObaXterm后在顶部导航找到Help并点击就能看到版本</span>
+</span></span></code></pre></div><p>执行完脚本后会生成一个<code>Custom.mxtpro</code>文件，然后放到 MobaXterm 安装目录下接着重启即可</p>
+
+
+        </div>
+        <div class="post-reward">
+            <div style="padding: 0 0 0 0; margin: 0 0 0 0; width: 100%; font-size:16px; text-align: center;">
+                <div id="QR" style="opacity: 0;">
+                    <div id="wechat" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="wechat_qr" src="https://eayonlee.com/img/wechat_pay.png" alt="wechat_pay"></a>
+                        <p>微信</p>
+                    </div>
+                    <div id="alipay" style="display: inline-block">
+                        <a class="fancybox" rel="group">
+                            <img id="alipay_qr" src="https://eayonlee.com/img/alipay.png" alt="alipay"></a>
+                        <p>支付宝</p>
+                    </div>
+                </div>
+                <button id="rewardButton"
+                        onclick="
+                    var qr = document.getElementById('QR');
+                    if (qr.style.opacity === '0') {
+                        qr.style.opacity='1';
+                    } else {
+                        qr.style.opacity='0'
+                    }"
+                >
+                    <span>☕️ By me a coffee</span>
+                </button>
+            </div>
+        </div>
+
+        <footer class="post-footer">
+            
+<nav class="paginav">
+  <a class="prev" href="https://eayonlee.com/tech/linux/mobaxterm/mobaxterm%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9E%E6%8E%A5%E6%96%AD%E5%BC%80%E9%97%AE%E9%A2%98/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>MobaXterm服务器连接断开问题</span>
+  </a>
+  <a class="next" href="https://eayonlee.com/tech/storage/raid%E7%A3%81%E7%9B%98%E9%98%B5%E5%88%97/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>RAID磁盘阵列</span>
+  </a>
+</nav>
+
+        </footer>
+    </div>
+
+<style>
+    .comments_details summary::marker {
+        font-size: 20px;
+        content: '👉展开评论';
+        color: var(--content);
+    }
+    .comments_details[open] summary::marker{
+        font-size: 20px;
+        content: '👇关闭评论';
+        color: var(--content);
+    }
+</style>
+
+
+<div>
+    <details class="comments_details">
+        <summary style="cursor: pointer; margin: 50px 0 20px 0;width: 130px;">
+            <span style="font-size: 20px;color: var(--content);">...</span>
+        </summary>
+        <div id="tcomment"></div>
+    </details>
+    <script src="https://cdn.staticfile.org/twikoo/1.5.8/twikoo.all.min.js">
+    </script>
+    <script>
+        twikoo.init({
+            envId:  null ,
+        el: "#tcomment",
+            lang: 'zh-CN',
+            region:  null ,
+        path: window.TWIKOO_MAGIC_PATH||window.location.pathname,
+        })
+    </script>
+</div>
+</article>
+</main>
+
+<footer class="footer">
+    <span>
+        Copyright
+        &copy;
+        2020-2023
+        <a href="https://eayonlee.com" style="color:#939393;">Eayon&#39;s Blog</a>
+        All Rights Reserved
+    </span>
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color:#939393;">京ICP备2023014718号</a>&nbsp;
+    <span>
+        <a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=null"
+           style="display:inline-block;text-decoration:none;height:20px;color:#939393;">
+            <img src="https://www.sulvblog.cn/img/beian.png" style="float:left;margin: 0px 5px 0px 0px;"/>
+            京公网安备 11010802042316号
+        </a>
+    </span>
+    <span id="busuanzi_container">
+        <span class="fa fa-user"></span> <span id="busuanzi_value_site_uv"></span>
+        <span class="fa fa-eye"></span> <span id="busuanzi_value_site_pv"></span>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <span class="topInner">
+        <svg class="topSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+            <path d="M12 6H0l6-6z"/>
+        </svg>
+        <span id="read_progress"></span>
+    </span>
+</a>
+
+<script>
+    document.addEventListener('scroll', function (e) {
+        const readProgress = document.getElementById("read_progress");
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        readProgress.innerText = ((scrollTop / (scrollHeight - clientHeight)).toFixed(2) * 100).toFixed(0);
+    })
+</script>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+</script>
+<script>
+    let mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        (function() {
+            document.cookie = "change-themes" + "="+ escape ("false");
+        })()
+
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    });
+</script>
+
+<script>
+    document.body.addEventListener('copy', function (e) {
+        if (window.getSelection().toString() && window.getSelection().toString().length > 50) {
+            let clipboardData = e.clipboardData || window.clipboardData;
+            if (clipboardData) {
+                e.preventDefault();
+                let htmlData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                let textData = window.getSelection().toString() +
+                    '\r\n\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                clipboardData.setData('text/html', htmlData);
+                clipboardData.setData('text/plain', textData);
+            }
+        }
+    });
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerText = '复制';
+
+        function copyingDone() {
+            copybutton.innerText = '已复制！';
+            setTimeout(() => {
+                copybutton.innerText = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                let text = codeblock.textContent +
+                    '\r\n————————————————\r\n' +
+                    '版权声明：本文为「'+"Eayon's Blog"+'」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。' +
+                '\r\n原文链接：' + location.href;
+                navigator.clipboard.writeText(text);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) {}
+            selection.removeRange(range);
+        });
+
+        let language = codeblock.className.replaceAll("language-", "")
+        let macTool = document.createElement("div")
+        let macTool1 = document.createElement("div")
+        let macTool2 = document.createElement("div")
+        let macTool3 = document.createElement("div")
+        let languageType = document.createElement("div")
+        languageType.innerText = language
+        macTool.setAttribute('class', 'mac-tool')
+        macTool1.setAttribute('class', 'mac bb1')
+        macTool2.setAttribute('class', 'mac bb2')
+        macTool3.setAttribute('class', 'mac bb3')
+        languageType.setAttribute('class', 'language-type')
+        macTool.appendChild(macTool1)
+        macTool.appendChild(macTool2)
+        macTool.appendChild(macTool3)
+        macTool.appendChild(languageType)
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+            container.appendChild(macTool)
+        }
+    });
+</script>
+</body>
+
+</html>
